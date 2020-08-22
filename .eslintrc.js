@@ -31,9 +31,10 @@ module.exports = {
     'curly': ['error', 'all'],
     'filenames/match-regex': ['error', '^[a-z0-9.-]+$', true],
     'import/prefer-default-export': 'off',
+    'max-classes-per-file': 'off',
     'max-len': ['error', 120],
     'max-statements-per-line': ['error', { max: 1 }],
-    'no-console': 'error',
+    'no-console': 'warn', // TODO
     'no-multiple-empty-lines': 'error',
     'no-process-env': 'error',
     'no-restricted-imports': ['error', { patterns: ['./*', '../*'] }],
@@ -44,6 +45,7 @@ module.exports = {
     'quote-props': ['error', 'consistent-as-needed'],
 
     '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/lines-between-class-members': 'off',
     // Sadly this is too zealous, typescript can infer more
     '@typescript-eslint/explicit-module-boundary-types': 'off',
   },

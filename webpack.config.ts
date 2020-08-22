@@ -5,12 +5,13 @@ import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import dotenv from 'dotenv';
-
+import dotenvExpand from 'dotenv-expand';
 import config from './src/client/config';
 
-dotenv.config();
+const env = dotenv.config();
+dotenvExpand(env);
 
-const { NODE_ENV, DEV_SERVER_PORT, SERVER_PORT, API_PATH, VERSION } = process.env;
+const { NODE_ENV, DEV_SERVER_PORT, SERVER_PORT, API_PATH, VERSION } = env.parsed as { [key: string]: string };
 
 // const { CIRCLE_SHA1, CIRCLE_TAG } = env;
 // const version = CIRCLE_TAG || (CIRCLE_SHA1 && CIRCLE_SHA1.substr(0, 7)) || 'dev';
@@ -81,7 +82,7 @@ export default {
         .filter((key) => key !== 'VERSION')
         .reduce((clientConfig, key) => {
           // eslint-disable-next-line no-param-reassign
-          clientConfig[`REACT_APP_${key}`] = process.env[key];
+          clientConfig[`REACT_APP_${key}`] = env.parsed ? env.parsed[key] : null;
           return clientConfig;
         }, {} as any),
     ),

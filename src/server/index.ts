@@ -1,36 +1,32 @@
-import { Server } from 'boardgame.io/server';
-import Router from 'koa-router';
+import getConfig from 'server/config';
+import createServer from 'server/server';
 
-import SevenHandPoker from 'common/game';
-import createApolloServer from 'server/apollo';
+const uncaughtError = (error: Error) => {
+  console.error('[fatal]', error);
 
-// TODO config
-// eslint-disable-next-line no-process-env
-const { SERVER_PORT = '8001' } = process.env;
+  // Kill the server, but not immediately so we can have the chance of reporting the error
+  setTimeout(() => {
+    process.exit(-1);
+  }, 2500);
+};
 
-const server = Server({
-  games: [SevenHandPoker],
-});
+process.on('uncaughtException', uncaughtError);
+process.on('unhandledRejection', uncaughtError);
 
-// Custom routes
-const router = new Router();
-router.get('/health', (ctx) => {
-  ctx.body = { hello: 'there' };
-});
-server.app.use(router.routes()).use(router.allowedMethods());
+const runServer = () => {
+  try {
+    const config = getConfig();
+    const server = createServer(config);
 
-// TODO, break this off to it's own server?
-// Have game.sevenhand.com - graph.sevenhand.com
+    // Run the server
+    server.run(
+      config.SERVER_PORT,
+      // TODO logger.
+      () => console.log(`Doing server things ${config.SERVER_PORT}`),
+    );
+  } catch (error) {
+    uncaughtError(error);
+  }
+};
 
-const apolloServer = createApolloServer();
-server.app.use(
-  apolloServer.getMiddleware({ path: '/graphql', cors: false }),
-);
-
-// Game server (can't use as middleware)
-server.run(
-  parseInt(SERVER_PORT, 10),
-  // TODO logger.
-  // eslint-disable-next-line no-console
-  () => console.log(`Doing server things ${SERVER_PORT}`),
-);
+runServer();

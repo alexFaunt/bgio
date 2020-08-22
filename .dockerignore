@@ -1,0 +1,12 @@
+node_modules
+build
+src/client
+src/ui
+Makefile
+docker-compose.yml
+.DS_Store
+.git
+.env
+.gitignore
+webpack.config.ts
+# .yarn-offline-mirror
