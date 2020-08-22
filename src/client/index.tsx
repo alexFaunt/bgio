@@ -1,7 +1,7 @@
 import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { Client } from 'boardgame.io/react';
-import { SocketIO } from 'boardgame.io/multiplayer'
+import { SocketIO } from 'boardgame.io/multiplayer';
 
 import TicTacToe from 'common/game';
 import Board from 'client/organisms/board';
@@ -15,6 +15,6 @@ const Game = Client({
 
 render((
   <StrictMode>
-    <Game playerID={location.search.split('').pop()} />
+    <Game playerID={window.location.search.split('').pop()} />
   </StrictMode>
 ), document.getElementById('root'));

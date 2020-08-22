@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import config from 'client/config';
-console.log('CONFIG', config);
-const Board = ({ ctx }) => {
+type Props = {
+  ctx: { gameover: boolean }; // TODO board game type
+};
+
+const Board = ({ ctx }: Props) => {
   if (ctx.gameover) {
     return <h1>Game over</h1>;
   }
