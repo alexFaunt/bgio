@@ -2,6 +2,7 @@ import { Server } from 'boardgame.io/server';
 import Router from 'koa-router';
 
 import SevenHandPoker from 'common/game';
+import createApolloServer from 'server/apollo';
 
 // TODO config
 // eslint-disable-next-line no-process-env
@@ -20,8 +21,10 @@ server.app.use(router.routes()).use(router.allowedMethods());
 
 // TODO, break this off to it's own server?
 // Have game.sevenhand.com - graph.sevenhand.com
+
+const apolloServer = createApolloServer();
 server.app.use(
-  apollo.getMiddleware({ path: '/graphql', cors: false }),
+  apolloServer.getMiddleware({ path: '/graphql', cors: false }),
 );
 
 // Game server (can't use as middleware)
