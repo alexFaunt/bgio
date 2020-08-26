@@ -18,3 +18,9 @@ reboot: init up
 
 up-server:
 	NETWORK_IP=${NETWORK_IP} docker-compose up
+
+migrate:
+	docker-compose exec bgio-server yarn migrate
+
+rollback:
+	docker-compose exec bgio-server yarn rollback

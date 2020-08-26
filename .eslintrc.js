@@ -68,5 +68,11 @@ module.exports = {
         'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['G'] }],
       },
     },
+    {
+      files: ['src/server/db/migrations/*'],
+      rules: {
+        'filenames/match-regex': ['error', '^[0-9]{14}_[a-z_]+$', true],
+      },
+    },
   ],
 };

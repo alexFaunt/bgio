@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import createApolloServer from 'server/apollo';
+import createApolloServer from 'server/graphql';
 import { Config } from 'server/config';
 import createBoardGameServer from 'server/board-game';
 

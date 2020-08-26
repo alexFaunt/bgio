@@ -1,6 +1,7 @@
 import { ApolloServer } from 'apollo-server-koa';
 import { Model } from 'objection';
-import { builder as schemaBuilder } from 'objection-graphql';
+// import { builder as SchemaBuilder } from 'objection-graphql';
+import { SchemaBuilder } from 'server/graphql/objection/schema-builder';
 
 import { Context } from 'server/types';
 import createPool, { Connection, Pool } from 'server/db/pool';
@@ -13,10 +14,12 @@ type CreateApolloServerArgs = {
 
 const createApolloServer = ({ connection, pool }: CreateApolloServerArgs) => {
   const dbPool = createPool({ connection, pool });
+
   Model.knex(dbPool);
 
-  const schema = schemaBuilder()
+  const schema = new SchemaBuilder()
     .allModels(models) // TODO middleware. Also it doesn't do totalCount - not sure what pagination is like
+    .selectFiltering(false)
     .build();
 
   return new ApolloServer({

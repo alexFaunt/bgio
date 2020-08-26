@@ -66,6 +66,9 @@ export default {
         test: /\.(ts|tsx|js)/,
         exclude: [/node_modules/, /\.json/],
         loader: 'babel-loader',
+        options: {
+          configFile: './babel.client.js',
+        },
       },
     ],
   },

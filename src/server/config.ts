@@ -1,4 +1,4 @@
-import convict from 'convict';
+import convict, { Schema } from 'convict';
 
 const schema = {
   KNEX_POOL_MIN: {
@@ -59,13 +59,13 @@ export type Config = {
 const entries = Object.keys(schema).reduce((acc, key) => ({
   ...acc,
   [key]: {
-    ...schema[key],
+    ...schema[key as keyof typeof schema],
     env: key,
   },
-}), {});
+}), {}) as Schema<Config>;
 
-const getConfig = (): Config => {
-  const configuration = convict(entries);
+const getConfig = () => {
+  const configuration = convict<Config>(entries);
 
   configuration.validate({ allowed: 'strict' });
 

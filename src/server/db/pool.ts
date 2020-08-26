@@ -19,7 +19,7 @@ type PoolArgs = {
   debug?: boolean,
 };
 
-const createPool = ({ connection, pool, debug = false }: PoolArgs) => {
+const createPool = ({ connection, pool, debug = true }: PoolArgs) => {
   const instance = knex({
     client: 'pg',
     connection,

@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-# RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile
 
 # This installs psql so we can do wait-for-postgres
 RUN apk --no-cache add postgresql-client postgresql curl ca-certificates wget && \
@@ -13,6 +13,9 @@ RUN apk --no-cache add postgresql-client postgresql curl ca-certificates wget &&
   apk add glibc-2.27-r0.apk
 
 EXPOSE 2001
+# whats this port?
 EXPOSE 35729
 
+# TODO can you have two commands?
+CMD ["yarn", "migrate"]
 CMD ["yarn", "start:prod"]
