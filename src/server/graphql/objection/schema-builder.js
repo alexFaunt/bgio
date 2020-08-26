@@ -172,14 +172,12 @@ export class SchemaBuilder {
   }
 
   _argsForModel(modelData) {
-    console.log('_argsForModel');
     const factories = defaultArgFactories(this.defaultArgNameMap, { typeCache: this.typeCache }).concat(this.argFactories);
 
     return factories.reduce((args, factory) => Object.assign(args, factory(modelData.fields, modelData.modelClass)), {});
   }
 
   _middlewareResolver(modelData, extraQuery) {
-    console.log('_middlewareResolver');
     if (this.middleware) {
       return this.middleware(this._resolverForModel(modelData, extraQuery), modelData, extraQuery);
     }
@@ -187,7 +185,6 @@ export class SchemaBuilder {
   }
 
   _rootSingleField(modelData) {
-    console.log('_rootSingleField');
     return {
       type: this._typeForModel(modelData),
       args: modelData.args,
@@ -198,7 +195,6 @@ export class SchemaBuilder {
   }
 
   _rootListField(modelData) {
-    console.log('_rootListField');
     return {
       type: new GraphQLList(this._typeForModel(modelData)),
       args: modelData.args,
@@ -207,7 +203,6 @@ export class SchemaBuilder {
   }
 
   _typeForModel(modelData) {
-    console.log('_typeForModel');
     const typeName = utils.typeNameForModel(modelData.modelClass);
 
     if (!this.typeCache[typeName]) {
@@ -221,12 +216,10 @@ export class SchemaBuilder {
   }
 
   _attrFields(modelData) {
-    console.log('_attrFields');
     return modelData.fields;
   }
 
   _relationFields(modelData) {
-    console.log('_relationFields');
     const fields = {};
 
     _.forOwn(modelData.modelClass.getRelations(), (relation) => {
@@ -250,7 +243,6 @@ export class SchemaBuilder {
   }
 
   _relationField(modelData, relation) {
-    console.log('_relationField');
     if (relation instanceof objection.HasOneRelation
       || relation instanceof objection.BelongsToOneRelation
       || relation instanceof objection.HasOneThroughRelation) {
@@ -268,7 +260,6 @@ export class SchemaBuilder {
   }
 
   _resolverForModel(modelData, extraQuery) {
-    console.log('_resolverForModel');
     return (ctx, ignore1, ignore2, data) => {
       ctx = ctx || {};
 
@@ -309,19 +300,16 @@ export class SchemaBuilder {
   }
 
   _buildEager(astNode, modelClass, astRoot) {
-    console.log('_buildEager');
     const eagerExpr = this._buildEagerSegment(astNode, modelClass, astRoot);
 
     if (eagerExpr.expression.length) {
       eagerExpr.expression = `[${eagerExpr.expression}]`;
-      console.log('EAGER EXP', eagerExpr.expression);
     }
 
     return eagerExpr;
   }
 
   _buildEagerSegment(astNode, modelClass, astRoot) {
-    console.log('_buildEagerSegment');
     const filters = {};
     const relations = modelClass.getRelations();
     let expression = '';
@@ -344,7 +332,6 @@ export class SchemaBuilder {
   }
 
   _buildEagerRelationSegment(selectionNode, relation, expression, filters, astRoot) {
-    console.log('_buildEagerRelationSegment');
     let relExpr = selectionNode.name.value;
 
     const selectFilter = this._filterForSelects(selectionNode, relation.relatedModelClass, astRoot);
@@ -389,7 +376,6 @@ export class SchemaBuilder {
   }
 
   _buildEagerFragmentSegment(selectionNode, modelClass, expression, filters, astRoot) {
-    console.log('_buildEagerFragmentSegment');
     const fragmentSelection = astRoot.fragments[selectionNode.name.value];
     const fragmentExpr = this._buildEagerSegment(fragmentSelection, modelClass, astRoot);
     let fragmentExprString = '';
@@ -407,7 +393,6 @@ export class SchemaBuilder {
   }
 
   _filterForArgs(astNode, modelClass, variables) {
-    console.log('_filterForArgs');
     const args = astNode.arguments;
 
     if (args.length === 0) {
@@ -439,7 +424,6 @@ export class SchemaBuilder {
   }
 
   _argValue(value, variables) {
-    console.log('_argValue');
     if (value.kind === KIND_VARIABLE) {
       return variables[value.name.value];
     } else if ('value' in value) {
@@ -451,7 +435,6 @@ export class SchemaBuilder {
   }
 
   _filterForSelects(astNode, modelClass, astRoot) {
-    console.log('_filterForSelects');
     if (!this.enableSelectFiltering) {
       return null;
     }
@@ -479,7 +462,6 @@ export class SchemaBuilder {
   }
 
   _collectSelects(astNode, relations, virtuals, fragments, selects) {
-    console.log('_collectSelects');
     for (let i = 0, l = astNode.selectionSet.selections.length; i < l; i += 1) {
       const selectionNode = astNode.selectionSet.selections[i];
 

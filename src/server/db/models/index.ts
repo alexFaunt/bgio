@@ -49,12 +49,16 @@ class PetModel extends BaseModel {
 
   static get relationMappings() {
     return {
-      owner: {
-        relation: Model.BelongsToOneRelation,
+      owners: {
+        relation: Model.ManyToManyRelation,
         modelClass: UserModel,
         join: {
-          from: 'pets.owner_id',
+          from: 'pets.id',
           to: 'users.id',
+          through: {
+            from: 'user_pets.pet_id',
+            to: 'user_pets.user_id',
+          },
         },
       },
     };
@@ -78,11 +82,15 @@ class UserModel extends BaseModel {
   static get relationMappings() {
     return {
       pets: {
-        relation: Model.HasManyRelation,
+        relation: Model.ManyToManyRelation,
         modelClass: PetModel,
         join: {
           from: 'users.id',
-          to: 'pets.owner_id',
+          to: 'pets.id',
+          through: {
+            from: 'user_pets.user_id',
+            to: 'user_pets.pet_id',
+          },
         },
       },
     };
