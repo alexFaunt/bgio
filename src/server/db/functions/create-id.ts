@@ -23,7 +23,7 @@ const generateSecretSauce = (): SecretSauce => {
   const exact = ((0.5 - (Math.sqrt(3) / 6)) * im);
   const rounded = Math.round(exact);
   let diff = 0;
-  let ic = null;
+  let ic: number | null = null;
   const maxRange = 20;
 
   while (diff < maxRange && ic === null) {

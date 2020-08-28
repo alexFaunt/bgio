@@ -1,5 +1,6 @@
 import getConfig from 'server/config';
 import createServer from 'server/server';
+import fetch from 'node-fetch';
 
 const uncaughtError = (error: Error) => {
   console.error('[fatal]', error);
@@ -13,16 +14,24 @@ const uncaughtError = (error: Error) => {
 process.on('uncaughtException', uncaughtError);
 process.on('unhandledRejection', uncaughtError);
 
-const runServer = () => {
+const runServer = async () => {
   try {
     const config = getConfig();
-    const server = createServer(config);
+    const server = await createServer(config);
 
     // Run the server
     server.run(
       config.SERVER_PORT,
-      // TODO logger.
-      () => console.log(`Doing server things ${config.SERVER_PORT}`),
+      async () => {
+        // TODO logger.
+        console.log(`Doing server things ${config.SERVER_PORT}`);
+
+        // const a = await fetch('http://0.0.0.0:2001/games/seven-hand-poker/create', {
+        //   method: 'POST',
+        // });
+        // const b = await a.text();
+        // console.log('A ---- ', b);
+      },
     );
   } catch (error) {
     uncaughtError(error);

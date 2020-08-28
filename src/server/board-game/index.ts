@@ -18,6 +18,13 @@ const createBoardGameServer = ({ connection }: CreateBoardGameServerArgs) => {
   const server = Server({
     games: [SevenHandPoker],
     db,
+    generateCredentials: (ctx) => {
+      // TODO this doesn't get called?! why?!
+      console.log('generateCredentials', ctx.state);
+    },
+    authenticateCredentials: (credentials, playerMetadata) => {
+      console.log('authenticateCredentials', credentials, playerMetadata)
+    },
   });
 
   return server;

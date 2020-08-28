@@ -1,7 +1,7 @@
 import { PlayerView } from 'boardgame.io/core';
 
 export default {
-  name: 'bgio-poker',
+  name: 'seven-hand-poker',
   minPlayers: 2,
   maxPlayers: 2,
 

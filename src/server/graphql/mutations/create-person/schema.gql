@@ -1,0 +1,13 @@
+input CreatePersonInput {
+  name: String!
+}
+
+type CreatePersonResponse {
+  user: User!
+}
+
+extend type Mutation {
+  createPerson(
+    input: CreatePersonInput!
+  ): CreatePersonResponse!
+}

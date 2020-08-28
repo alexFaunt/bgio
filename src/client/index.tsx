@@ -10,7 +10,12 @@ import config from 'client/config';
 const Game = Client({
   game: TicTacToe,
   board: Board,
-  multiplayer: SocketIO({ server: config.SERVER_URL }),
+  multiplayer: SocketIO({
+    server: config.SERVER_URL,
+    socketOpts: {
+      transports: ['websocket'],
+    },
+  }),
 });
 
 render((

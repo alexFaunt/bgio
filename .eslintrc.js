@@ -29,8 +29,6 @@ module.exports = {
     'arrow-parens': ['error', 'always'],
     'brace-style': ['error', '1tbs'],
     'curly': ['error', 'all'],
-    'filenames/match-regex': ['error', '^[a-z0-9.-]+$', true],
-    'import/prefer-default-export': 'off',
     'max-classes-per-file': 'off',
     'max-len': ['error', 120],
     'max-statements-per-line': ['error', { max: 1 }],
@@ -43,6 +41,11 @@ module.exports = {
     'object-curly-newline': ['error', { multiline: true, consistent: true }],
     'operator-linebreak': ['error', 'after', { overrides: { '?': 'before', ':': 'before' } }],
     'quote-props': ['error', 'consistent-as-needed'],
+
+    'filenames/match-regex': ['error', '^[a-z0-9.-]+$', true],
+
+    'import/prefer-default-export': 'off',
+    'import/no-cycle': 'off',
 
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/lines-between-class-members': 'off',

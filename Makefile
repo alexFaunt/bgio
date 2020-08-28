@@ -14,6 +14,10 @@ up:
 down:
 	docker-compose down
 
+clean:
+	docker image prune --force --filter "until=24h"
+	docker volume prune --force --filter "until=24h"
+
 reboot: init up
 
 up-server:
