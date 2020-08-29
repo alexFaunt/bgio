@@ -21,221 +21,127 @@ export type Scalars = {
   Float: number;
 };
 
-export type Query = {
-  __typename?: 'Query';
-  user?: Maybe<User>;
-  users?: Maybe<Array<Maybe<User>>>;
-  pet?: Maybe<Pet>;
-  pets?: Maybe<Array<Maybe<Pet>>>;
-};
-
-
-export type QueryUserArgs = {
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  idEq?: Maybe<Scalars['String']>;
-  nameEq?: Maybe<Scalars['String']>;
-  idGt?: Maybe<Scalars['String']>;
-  nameGt?: Maybe<Scalars['String']>;
-  idGte?: Maybe<Scalars['String']>;
-  nameGte?: Maybe<Scalars['String']>;
-  idLt?: Maybe<Scalars['String']>;
-  nameLt?: Maybe<Scalars['String']>;
-  idLte?: Maybe<Scalars['String']>;
-  nameLte?: Maybe<Scalars['String']>;
-  idLike?: Maybe<Scalars['String']>;
-  nameLike?: Maybe<Scalars['String']>;
-  idIsNull?: Maybe<Scalars['Boolean']>;
-  nameIsNull?: Maybe<Scalars['Boolean']>;
-  idIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idLikeNoCase?: Maybe<Scalars['String']>;
-  nameLikeNoCase?: Maybe<Scalars['String']>;
-  orderBy?: Maybe<UserPropertiesEnum>;
-  orderByDesc?: Maybe<UserPropertiesEnum>;
-  range?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  limit?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  offset?: Maybe<Array<Maybe<Scalars['Int']>>>;
-};
-
-
-export type QueryUsersArgs = {
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  idEq?: Maybe<Scalars['String']>;
-  nameEq?: Maybe<Scalars['String']>;
-  idGt?: Maybe<Scalars['String']>;
-  nameGt?: Maybe<Scalars['String']>;
-  idGte?: Maybe<Scalars['String']>;
-  nameGte?: Maybe<Scalars['String']>;
-  idLt?: Maybe<Scalars['String']>;
-  nameLt?: Maybe<Scalars['String']>;
-  idLte?: Maybe<Scalars['String']>;
-  nameLte?: Maybe<Scalars['String']>;
-  idLike?: Maybe<Scalars['String']>;
-  nameLike?: Maybe<Scalars['String']>;
-  idIsNull?: Maybe<Scalars['Boolean']>;
-  nameIsNull?: Maybe<Scalars['Boolean']>;
-  idIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idLikeNoCase?: Maybe<Scalars['String']>;
-  nameLikeNoCase?: Maybe<Scalars['String']>;
-  orderBy?: Maybe<UserPropertiesEnum>;
-  orderByDesc?: Maybe<UserPropertiesEnum>;
-  range?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  limit?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  offset?: Maybe<Array<Maybe<Scalars['Int']>>>;
-};
-
-
-export type QueryPetArgs = {
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  idEq?: Maybe<Scalars['String']>;
-  nameEq?: Maybe<Scalars['String']>;
-  idGt?: Maybe<Scalars['String']>;
-  nameGt?: Maybe<Scalars['String']>;
-  idGte?: Maybe<Scalars['String']>;
-  nameGte?: Maybe<Scalars['String']>;
-  idLt?: Maybe<Scalars['String']>;
-  nameLt?: Maybe<Scalars['String']>;
-  idLte?: Maybe<Scalars['String']>;
-  nameLte?: Maybe<Scalars['String']>;
-  idLike?: Maybe<Scalars['String']>;
-  nameLike?: Maybe<Scalars['String']>;
-  idIsNull?: Maybe<Scalars['Boolean']>;
-  nameIsNull?: Maybe<Scalars['Boolean']>;
-  idIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idLikeNoCase?: Maybe<Scalars['String']>;
-  nameLikeNoCase?: Maybe<Scalars['String']>;
-  orderBy?: Maybe<PetPropertiesEnum>;
-  orderByDesc?: Maybe<PetPropertiesEnum>;
-  range?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  limit?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  offset?: Maybe<Array<Maybe<Scalars['Int']>>>;
-};
-
-
-export type QueryPetsArgs = {
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  idEq?: Maybe<Scalars['String']>;
-  nameEq?: Maybe<Scalars['String']>;
-  idGt?: Maybe<Scalars['String']>;
-  nameGt?: Maybe<Scalars['String']>;
-  idGte?: Maybe<Scalars['String']>;
-  nameGte?: Maybe<Scalars['String']>;
-  idLt?: Maybe<Scalars['String']>;
-  nameLt?: Maybe<Scalars['String']>;
-  idLte?: Maybe<Scalars['String']>;
-  nameLte?: Maybe<Scalars['String']>;
-  idLike?: Maybe<Scalars['String']>;
-  nameLike?: Maybe<Scalars['String']>;
-  idIsNull?: Maybe<Scalars['Boolean']>;
-  nameIsNull?: Maybe<Scalars['Boolean']>;
-  idIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idLikeNoCase?: Maybe<Scalars['String']>;
-  nameLikeNoCase?: Maybe<Scalars['String']>;
-  orderBy?: Maybe<PetPropertiesEnum>;
-  orderByDesc?: Maybe<PetPropertiesEnum>;
-  range?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  limit?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  offset?: Maybe<Array<Maybe<Scalars['Int']>>>;
-};
+export enum OrderDirection {
+  ASC = 'ASC',
+  DESC = 'DESC'
+}
 
 export type User = {
   __typename?: 'User';
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
-  pets?: Maybe<Array<Maybe<Pet>>>;
+  createdAt?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
+  primaryPets: PetConnection;
+  pets: PetConnection;
+};
+
+
+export type UserPrimaryPetsArgs = {
+  conditions?: Maybe<PetConditions>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Array<Maybe<PetOrder>>>;
+  direction?: Maybe<OrderDirection>;
 };
 
 
 export type UserPetsArgs = {
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  idEq?: Maybe<Scalars['String']>;
-  nameEq?: Maybe<Scalars['String']>;
-  idGt?: Maybe<Scalars['String']>;
-  nameGt?: Maybe<Scalars['String']>;
-  idGte?: Maybe<Scalars['String']>;
-  nameGte?: Maybe<Scalars['String']>;
-  idLt?: Maybe<Scalars['String']>;
-  nameLt?: Maybe<Scalars['String']>;
-  idLte?: Maybe<Scalars['String']>;
-  nameLte?: Maybe<Scalars['String']>;
-  idLike?: Maybe<Scalars['String']>;
-  nameLike?: Maybe<Scalars['String']>;
-  idIsNull?: Maybe<Scalars['Boolean']>;
-  nameIsNull?: Maybe<Scalars['Boolean']>;
-  idIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idLikeNoCase?: Maybe<Scalars['String']>;
-  nameLikeNoCase?: Maybe<Scalars['String']>;
-  orderBy?: Maybe<PetPropertiesEnum>;
-  orderByDesc?: Maybe<PetPropertiesEnum>;
-  limit?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  offset?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  conditions?: Maybe<PetConditions>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Array<Maybe<PetOrder>>>;
+  direction?: Maybe<OrderDirection>;
+};
+
+export type PetConnection = {
+  __typename?: 'PetConnection';
+  nodes: Array<Maybe<Pet>>;
+  totalCount: Scalars['Int'];
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  nodes: Array<Maybe<User>>;
+  totalCount: Scalars['Int'];
+};
+
+export enum UserOrder {
+  NAME = 'NAME',
+  CREATED_AT = 'CREATED_AT',
+  UPDATED_AT = 'UPDATED_AT'
+}
+
+export type UserConditions = {
+  id?: Maybe<Array<Maybe<Scalars['String']>>>;
+  name?: Maybe<Array<Maybe<Scalars['String']>>>;
+  createdAt?: Maybe<Array<Maybe<Scalars['String']>>>;
+  updatedAt?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
 export type Pet = {
   __typename?: 'Pet';
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
-  owners?: Maybe<Array<Maybe<User>>>;
+  longField?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
+  primaryOwner?: Maybe<User>;
+  owners: UserConnection;
+};
+
+
+export type PetPrimaryOwnerArgs = {
+  id: Scalars['String'];
 };
 
 
 export type PetOwnersArgs = {
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  idEq?: Maybe<Scalars['String']>;
-  nameEq?: Maybe<Scalars['String']>;
-  idGt?: Maybe<Scalars['String']>;
-  nameGt?: Maybe<Scalars['String']>;
-  idGte?: Maybe<Scalars['String']>;
-  nameGte?: Maybe<Scalars['String']>;
-  idLt?: Maybe<Scalars['String']>;
-  nameLt?: Maybe<Scalars['String']>;
-  idLte?: Maybe<Scalars['String']>;
-  nameLte?: Maybe<Scalars['String']>;
-  idLike?: Maybe<Scalars['String']>;
-  nameLike?: Maybe<Scalars['String']>;
-  idIsNull?: Maybe<Scalars['Boolean']>;
-  nameIsNull?: Maybe<Scalars['Boolean']>;
-  idIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nameNotIn?: Maybe<Array<Maybe<Scalars['String']>>>;
-  idLikeNoCase?: Maybe<Scalars['String']>;
-  nameLikeNoCase?: Maybe<Scalars['String']>;
-  orderBy?: Maybe<UserPropertiesEnum>;
-  orderByDesc?: Maybe<UserPropertiesEnum>;
-  limit?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  offset?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  conditions?: Maybe<UserConditions>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Array<Maybe<UserOrder>>>;
+  direction?: Maybe<OrderDirection>;
 };
 
-export enum UserPropertiesEnum {
-  id = 'id',
-  name = 'name'
+export enum PetOrder {
+  NAME = 'NAME',
+  LONG_FIELD = 'LONG_FIELD',
+  CREATED_AT = 'CREATED_AT',
+  UPDATED_AT = 'UPDATED_AT'
 }
 
-export enum PetPropertiesEnum {
-  id = 'id',
-  name = 'name'
-}
+export type PetConditions = {
+  id?: Maybe<Array<Maybe<Scalars['String']>>>;
+  name?: Maybe<Array<Maybe<Scalars['String']>>>;
+  longField?: Maybe<Array<Maybe<Scalars['String']>>>;
+  createdAt?: Maybe<Array<Maybe<Scalars['String']>>>;
+  updatedAt?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  user: UserConnection;
+  pet: PetConnection;
+};
+
+
+export type QueryUserArgs = {
+  conditions?: Maybe<UserConditions>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Array<Maybe<UserOrder>>>;
+  direction?: Maybe<OrderDirection>;
+};
+
+
+export type QueryPetArgs = {
+  conditions?: Maybe<PetConditions>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Array<Maybe<PetOrder>>>;
+  direction?: Maybe<OrderDirection>;
+};
 
 export type CreatePersonInput = {
   name: Scalars['String'];
@@ -335,51 +241,77 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  Query: ResolverTypeWrapper<{}>;
-  String: ResolverTypeWrapper<Scalars['String']>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
+  OrderDirection: OrderDirection;
   User: ResolverTypeWrapper<UserModel>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  PetConnection: ResolverTypeWrapper<Omit<PetConnection, 'nodes'> & { nodes: Array<Maybe<ResolversTypes['Pet']>> }>;
+  UserConnection: ResolverTypeWrapper<Omit<UserConnection, 'nodes'> & { nodes: Array<Maybe<ResolversTypes['User']>> }>;
+  UserOrder: UserOrder;
+  UserConditions: UserConditions;
   Pet: ResolverTypeWrapper<PetModel>;
-  UserPropertiesEnum: UserPropertiesEnum;
-  PetPropertiesEnum: PetPropertiesEnum;
+  PetOrder: PetOrder;
+  PetConditions: PetConditions;
+  Query: ResolverTypeWrapper<{}>;
   CreatePersonInput: CreatePersonInput;
   CreatePersonResponse: ResolverTypeWrapper<Omit<CreatePersonResponse, 'user'> & { user: ResolversTypes['User'] }>;
   Mutation: ResolverTypeWrapper<{}>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  Query: {};
-  String: Scalars['String'];
-  Boolean: Scalars['Boolean'];
-  Int: Scalars['Int'];
   User: UserModel;
+  String: Scalars['String'];
+  Int: Scalars['Int'];
+  PetConnection: Omit<PetConnection, 'nodes'> & { nodes: Array<Maybe<ResolversParentTypes['Pet']>> };
+  UserConnection: Omit<UserConnection, 'nodes'> & { nodes: Array<Maybe<ResolversParentTypes['User']>> };
+  UserConditions: UserConditions;
   Pet: PetModel;
+  PetConditions: PetConditions;
+  Query: {};
   CreatePersonInput: CreatePersonInput;
   CreatePersonResponse: Omit<CreatePersonResponse, 'user'> & { user: ResolversParentTypes['User'] };
   Mutation: {};
-}>;
-
-export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, never>>;
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
-  pet?: Resolver<Maybe<ResolversTypes['Pet']>, ParentType, ContextType, RequireFields<QueryPetArgs, never>>;
-  pets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Pet']>>>, ParentType, ContextType, RequireFields<QueryPetsArgs, never>>;
+  Boolean: Scalars['Boolean'];
 }>;
 
 export type UserResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  pets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Pet']>>>, ParentType, ContextType, RequireFields<UserPetsArgs, never>>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  primaryPets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPrimaryPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type PetConnectionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PetConnection'] = ResolversParentTypes['PetConnection']> = ResolversObject<{
+  nodes?: Resolver<Array<Maybe<ResolversTypes['Pet']>>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type UserConnectionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection']> = ResolversObject<{
+  nodes?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
 export type PetResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Pet'] = ResolversParentTypes['Pet']> = ResolversObject<{
   id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  owners?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, RequireFields<PetOwnersArgs, never>>;
+  longField?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  primaryOwner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<PetPrimaryOwnerArgs, 'id'>>;
+  owners?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<PetOwnersArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  user?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUserArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  pet?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<QueryPetArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
 }>;
 
 export type CreatePersonResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreatePersonResponse'] = ResolversParentTypes['CreatePersonResponse']> = ResolversObject<{
@@ -392,9 +324,11 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
 }>;
 
 export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
-  Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  PetConnection?: PetConnectionResolvers<ContextType>;
+  UserConnection?: UserConnectionResolvers<ContextType>;
   Pet?: PetResolvers<ContextType>;
+  Query?: QueryResolvers<ContextType>;
   CreatePersonResponse?: CreatePersonResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
 }>;

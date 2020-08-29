@@ -30,7 +30,7 @@ const invalidateRequireCache = () => {
 const generateTypes = async () => {
   invalidateRequireCache();
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-  const getSchema = require('server/graphql/schema.ts').default;
+  const getSchema = require('server/graphql/schema').default;
 
   const modelsList = await readdir(path.resolve(__dirname, '../src/server/db/models'));
 
@@ -120,8 +120,8 @@ const run = async () => {
 
   chokidar.watch([
     './src/server/graphql/mutations',
-    './src/server/graphql/schema.ts',
-    './server/db/models',
+    './src/server/graphql/schema',
+    './src/server/db/models',
   ])
     .on('add', debouncedGenerateTypes)
     .on('addDir', debouncedGenerateTypes)

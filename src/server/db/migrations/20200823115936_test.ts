@@ -22,6 +22,7 @@ export const { up, down } = migrator(__filename, {
     await knex.schema.createTable('pets', (table) => {
       createPetId(table).primary();
       table.string('name');
+      table.string('long_field');
       table.timestamps(true, true);
     });
 

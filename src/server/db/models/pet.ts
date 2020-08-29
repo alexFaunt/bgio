@@ -1,4 +1,4 @@
-import BaseModel from 'server/db/models/base';
+import BaseModel from 'server/db/base-model';
 import UserModel from 'server/db/models/user';
 
 class PetModel extends BaseModel {
@@ -12,11 +12,24 @@ class PetModel extends BaseModel {
     properties: {
       id: { type: 'string' },
       name: { type: 'string', minLength: 5, maxLength: 255 },
+      longField: { type: 'string' }, // TODO should this be camel or not?
+       // TODO can it be required?
+       // TODO shared common ones?
+      createdAt: { type: 'string' }, // TODO date validator?
+      updatedAt: { type: 'string' }, // TODO date validator?
     },
   };
 
   static get relationMappings() {
     return {
+      primaryOwner: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: UserModel,
+        join: {
+          from: 'pets.primary_owner_id',
+          to: 'users.id',
+        },
+      },
       owners: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: UserModel,

@@ -5,28 +5,29 @@ const {
   GraphQLInt, GraphQLList, GraphQLEnumType, GraphQLBoolean, GraphQLObjectType,
 } = graphqlRoot;
 
-module.exports = (argNameMap, opt) => [
+export const singleTypeArgs = (argNameMap, opt) => [
   basicOperator('=', ''),
-  basicOperator('=', argNameMap.eq),
+];
+
+export const connectionTypeArgs = (argNameMap, opt) => [
   basicOperator('>', argNameMap.gt),
   basicOperator('>=', argNameMap.gte),
   basicOperator('<', argNameMap.lt),
   basicOperator('<=', argNameMap.lte),
   basicOperator('like', argNameMap.like),
   isNull(argNameMap.isNull),
-  whereIn('whereIn', argNameMap.in),
-  whereIn('whereNotIn', argNameMap.notIn),
+  // whereIn('in', argNameMap.in),
+  whereIn('notIn', argNameMap.notIn),
   likeNoCase(argNameMap.likeNoCase),
   orderBy(argNameMap.orderBy, 'asc', opt.typeCache),
   orderBy(argNameMap.orderByDesc, 'desc', opt.typeCache),
-  range(argNameMap.range),
   limit(argNameMap.limit),
   offset(argNameMap.offset),
 ];
 
-function basicOperator(op, postfix) {
+function basicOperator(op, suffix) {
   return (fields, modelClass) => reducePrimitiveFields(fields, modelClass, (args, field, propName, columnName) => {
-    args[propName + postfix] = {
+    args[propName + suffix] = {
       type: field.type,
 
       query(query, value) {
@@ -38,9 +39,9 @@ function basicOperator(op, postfix) {
   });
 }
 
-function isNull(postfix) {
+function isNull(suffix) {
   return (fields, modelClass) => reducePrimitiveFields(fields, modelClass, (args, field, propName, columnName) => {
-    args[propName + postfix] = {
+    args[propName + suffix] = {
       type: GraphQLBoolean,
 
       query(query, value) {
@@ -56,9 +57,9 @@ function isNull(postfix) {
   });
 }
 
-function likeNoCase(postfix) {
+function likeNoCase(suffix) {
   return (fields, modelClass) => reducePrimitiveFields(fields, modelClass, (args, field, propName, columnName) => {
-    args[propName + postfix] = {
+    args[propName + suffix] = {
       type: field.type,
 
       query(query, value) {
@@ -70,9 +71,9 @@ function likeNoCase(postfix) {
   });
 }
 
-function whereIn(method, postfix) {
+function whereIn(method, suffix) {
   return (fields, modelClass) => reducePrimitiveFields(fields, modelClass, (args, field, propName, columnName) => {
-    args[propName + postfix] = {
+    args[propName + suffix] = {
       type: new GraphQLList(field.type),
 
       query(query, value) {
@@ -140,7 +141,7 @@ function limit(argName) {
     const args = {};
 
     args[argName] = {
-      type: new GraphQLList(GraphQLInt),
+      type: GraphQLInt, // TODO this was wrapped in new GraphQLList(
 
       query(query, value) {
         const number = parseInt(value);
@@ -157,7 +158,7 @@ function offset(argName) {
     const args = {};
 
     args[argName] = {
-      type: new GraphQLList(GraphQLInt),
+      type: GraphQLInt, // TODO why this was wrapped in new GraphQLList(
 
       query(query, value) {
         const number = parseInt(value);

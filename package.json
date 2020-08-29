@@ -66,6 +66,7 @@
     "objection": "^2.2.3",
     "objection-graphql": "^0.4.5",
     "pg": "^8.3.2",
+    "pluralize": "^8.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-is": "^16.13.1",

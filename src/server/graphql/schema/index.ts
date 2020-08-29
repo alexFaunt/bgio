@@ -3,15 +3,15 @@ import { mergeSchemas } from '@graphql-tools/merge';
 import { SchemaBuilder } from 'server/graphql/objection/schema-builder';
 import models from 'server/db/models';
 import createMutationDefinitions from 'server/graphql/mutations';
+import createAutomaticSchema from 'server/graphql/schema/auto';
+
+
 
 const createSchema = async () => {
-  const autoSchema = new SchemaBuilder()
-    .allModels(models)
-    .selectFiltering(false)
-    .build();
+  const autoSchema = await createAutomaticSchema();
   // TBH just redo this shit?
-
   const { resolvers: Mutation, typeDefs: mutationTypeDefs } = await createMutationDefinitions();
+  // console.log('AUTO', autoSchema.getQueryType()?.getFields())
 
   const schema = mergeSchemas({
     schemas: [autoSchema],
