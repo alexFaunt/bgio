@@ -34,11 +34,12 @@ export type User = {
   updatedAt?: Maybe<Scalars['String']>;
   primaryPets: PetConnection;
   pets: PetConnection;
+  resolvedField: Scalars['String'];
 };
 
 
 export type UserPrimaryPetsArgs = {
-  conditions?: Maybe<PetConditions>;
+  conditions?: Maybe<Array<Maybe<PetConditions>>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   orderBy?: Maybe<Array<Maybe<PetOrder>>>;
@@ -47,7 +48,7 @@ export type UserPrimaryPetsArgs = {
 
 
 export type UserPetsArgs = {
-  conditions?: Maybe<PetConditions>;
+  conditions?: Maybe<Array<Maybe<PetConditions>>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   orderBy?: Maybe<Array<Maybe<PetOrder>>>;
@@ -58,6 +59,14 @@ export type PetConnection = {
   __typename?: 'PetConnection';
   nodes: Array<Maybe<Pet>>;
   totalCount: Scalars['Int'];
+};
+
+export type PetConditions = {
+  id?: Maybe<Array<Maybe<Scalars['String']>>>;
+  name?: Maybe<Array<Maybe<Scalars['String']>>>;
+  longField?: Maybe<Array<Maybe<Scalars['String']>>>;
+  createdAt?: Maybe<Array<Maybe<Scalars['String']>>>;
+  updatedAt?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
 export type UserConnection = {
@@ -97,7 +106,7 @@ export type PetPrimaryOwnerArgs = {
 
 
 export type PetOwnersArgs = {
-  conditions?: Maybe<UserConditions>;
+  conditions?: Maybe<Array<Maybe<UserConditions>>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   orderBy?: Maybe<Array<Maybe<UserOrder>>>;
@@ -111,23 +120,22 @@ export enum PetOrder {
   UPDATED_AT = 'UPDATED_AT'
 }
 
-export type PetConditions = {
-  id?: Maybe<Array<Maybe<Scalars['String']>>>;
-  name?: Maybe<Array<Maybe<Scalars['String']>>>;
-  longField?: Maybe<Array<Maybe<Scalars['String']>>>;
-  createdAt?: Maybe<Array<Maybe<Scalars['String']>>>;
-  updatedAt?: Maybe<Array<Maybe<Scalars['String']>>>;
-};
-
 export type Query = {
   __typename?: 'Query';
-  user: UserConnection;
-  pet: PetConnection;
+  user?: Maybe<User>;
+  users: UserConnection;
+  pet?: Maybe<Pet>;
+  pets: PetConnection;
 };
 
 
 export type QueryUserArgs = {
-  conditions?: Maybe<UserConditions>;
+  id: Scalars['String'];
+};
+
+
+export type QueryUsersArgs = {
+  conditions?: Maybe<Array<Maybe<UserConditions>>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   orderBy?: Maybe<Array<Maybe<UserOrder>>>;
@@ -136,7 +144,12 @@ export type QueryUserArgs = {
 
 
 export type QueryPetArgs = {
-  conditions?: Maybe<PetConditions>;
+  id: Scalars['String'];
+};
+
+
+export type QueryPetsArgs = {
+  conditions?: Maybe<Array<Maybe<PetConditions>>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   orderBy?: Maybe<Array<Maybe<PetOrder>>>;
@@ -246,12 +259,12 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   PetConnection: ResolverTypeWrapper<Omit<PetConnection, 'nodes'> & { nodes: Array<Maybe<ResolversTypes['Pet']>> }>;
+  PetConditions: PetConditions;
   UserConnection: ResolverTypeWrapper<Omit<UserConnection, 'nodes'> & { nodes: Array<Maybe<ResolversTypes['User']>> }>;
   UserOrder: UserOrder;
   UserConditions: UserConditions;
   Pet: ResolverTypeWrapper<PetModel>;
   PetOrder: PetOrder;
-  PetConditions: PetConditions;
   Query: ResolverTypeWrapper<{}>;
   CreatePersonInput: CreatePersonInput;
   CreatePersonResponse: ResolverTypeWrapper<Omit<CreatePersonResponse, 'user'> & { user: ResolversTypes['User'] }>;
@@ -265,10 +278,10 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
   Int: Scalars['Int'];
   PetConnection: Omit<PetConnection, 'nodes'> & { nodes: Array<Maybe<ResolversParentTypes['Pet']>> };
+  PetConditions: PetConditions;
   UserConnection: Omit<UserConnection, 'nodes'> & { nodes: Array<Maybe<ResolversParentTypes['User']>> };
   UserConditions: UserConditions;
   Pet: PetModel;
-  PetConditions: PetConditions;
   Query: {};
   CreatePersonInput: CreatePersonInput;
   CreatePersonResponse: Omit<CreatePersonResponse, 'user'> & { user: ResolversParentTypes['User'] };
@@ -283,6 +296,7 @@ export type UserResolvers<ContextType = GraphQLContext, ParentType extends Resol
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   primaryPets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPrimaryPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
   pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  resolvedField?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
@@ -310,8 +324,10 @@ export type PetResolvers<ContextType = GraphQLContext, ParentType extends Resolv
 }>;
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  user?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUserArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
-  pet?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<QueryPetArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  pet?: Resolver<Maybe<ResolversTypes['Pet']>, ParentType, ContextType, RequireFields<QueryPetArgs, 'id'>>;
+  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<QueryPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
 }>;
 
 export type CreatePersonResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreatePersonResponse'] = ResolversParentTypes['CreatePersonResponse']> = ResolversObject<{

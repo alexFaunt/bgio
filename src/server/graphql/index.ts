@@ -20,7 +20,7 @@ const createApolloServer = async ({ connection, pool }: CreateApolloServerArgs) 
   return new ApolloServer({
     schema,
     context: async ({ ctx: { state: { auth } } }: { ctx: Context }) => {
-      console.log('GraphQL context', auth);
+      // console.log('GraphQL context', auth);
       return { auth };
     },
   });

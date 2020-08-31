@@ -1,3 +1,4 @@
+import pluralize from 'pluralize';
 import {
   Model,
   HasOneRelation,
@@ -6,43 +7,55 @@ import {
   HasManyRelation,
   ManyToManyRelation,
 } from 'objection';
+import {
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLEnumType,
+  GraphQLInputObjectType,
+} from 'graphql';
 import models from 'server/db/models';
-import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLInt, GraphQLNonNull, GraphQLEnumType, GraphQLInputObjectType } from 'graphql';
-import pluralize from 'pluralize';
 import { jsonSchemaToGraphQLFields } from 'server/graphql/objection/json-schema';
-import defaultArgFactories, { basicOperator } from 'server/graphql/objection/arg-factories';
 
 import { camelCase, snakeCase } from 'lodash/fp';
 
-const argNames = {
-  eq: 'Eq',
-  gt: 'Gt',
-  gte: 'Gte',
-  lt: 'Lt',
-  lte: 'Lte',
-  like: 'Like',
-  isNull: 'IsNull',
-  likeNoCase: 'LikeNoCase',
-  in: 'In',
-  notIn: 'NotIn',
-  orderBy: 'orderBy',
-  orderByDesc: 'orderByDesc',
-  range: 'range',
-  limit: 'limit',
-  offset: 'offset',
+const defaultConditions = [];
+const defaultLimit = 0;
+const defaultOffset = 0;
+const defaultOrderBy = 'CREATED_AT';
+const defaultDirection = 'DESC';
+
+const expandConnections = (item) => {
+  if (Array.isArray(item)) {
+    return {
+      nodes: item.map(expandConnections),
+    };
+  }
+
+  if (typeof item === 'object') {
+    return Object.entries(item).reduce((acc, [key, child]) => {
+      acc[key] = expandConnections(child);
+      return acc;
+    }, {});
+  }
+
+  return item;
 };
 
 const getNames = (model: Model) => {
-  // TODO - what about like if the table name has _ in it? plural is weird?
-  const fieldName = pluralize.singular(model.tableName);
-  const connectionFieldName = camelCase(fieldName);
-  const typeName = `${connectionFieldName.substring(0, 1).toUpperCase()}${connectionFieldName.substring(1)}`;
+  const fieldName = camelCase(pluralize.singular(model.tableName));
+  const connectionFieldName = camelCase(model.tableName);
+  const typeName = `${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`;
   const connectionTypeName = `${typeName}Connection`;
   const orderByTypeName = `${typeName}Order`;
   const conditionTypeName = `${typeName}Conditions`;
 
   return { fieldName, connectionFieldName, typeName, connectionTypeName, orderByTypeName, conditionTypeName };
 };
+
+const isListRelation = (relation) => relation === HasManyRelation || relation === ManyToManyRelation;
 
 const getRelationTypeName = ({ relation, modelClass }) => {
   const { typeName, connectionTypeName } = getNames(modelClass);
@@ -55,12 +68,108 @@ const getRelationTypeName = ({ relation, modelClass }) => {
     return typeName;
   }
 
-  if (relation === HasManyRelation || relation === ManyToManyRelation) {
+  if (isListRelation(relation)) {
     // TODO
     return connectionTypeName;
   }
 
   throw new Error(`relation type "${relation.constructor.name}" is not supported`);
+};
+
+const createListModifier = (selection) => (builder) => {
+  const argMap = selection.arguments.reduce((argAcc, { name, value }) => {
+    if (name.value === 'conditions') {
+      // TODO - conditions could be an array of objects or an object
+      const conditions = value.kind === 'ObjectValue'
+        ? [value.fields]
+        : value.values.map(({ fields }) => fields);
+
+      // eslint-disable-next-line no-param-reassign
+      argAcc[name.value] = conditions.map((condition) => (
+        condition.reduce((valueAcc, field) => {
+          // eslint-disable-next-line no-param-reassign
+          valueAcc[field.name.value] = field.value.value;
+          return valueAcc;
+        }, {})
+      ));
+
+      return argAcc;
+    }
+    // eslint-disable-next-line no-param-reassign
+    argAcc[name.value] = value.value;
+
+    return argAcc;
+  }, {});
+
+  // TODO order could be an array
+  const order = argMap.orderBy || defaultOrderBy;
+  const direction = argMap.direction || defaultDirection;
+
+  builder.limit(parseInt(argMap.limit, 10) || defaultLimit);
+  builder.offset(parseInt(argMap.offset, 10) || defaultOffset);
+  builder.orderByRaw(`?? ${direction} NULLS LAST`, [order.toLowerCase()]);
+
+  // TODO Conditions really needs testing
+  (argMap.conditions || defaultConditions).forEach((conds) => {
+    builder.orWhere(conds);
+  });
+};
+
+const getEagerString = ({ node, modifiers, fieldName, model }) => {
+  const { selections } = node.selectionSet;
+
+  const subSelection = selections.reduce((acc, selection) => {
+    const child = selection.name.value;
+
+    // TODO - this model is the top level thing - not the recursive one...
+    const relationInfo = model.relationMappings[child];
+
+    // It's not a relation so it's just a column or none of our business so the eager string stops here
+    if (!relationInfo) {
+      return acc;
+    }
+
+    if (!isListRelation(relationInfo.relation)) {
+      // It's not a list relation, so it's a single object
+      // recurse down to next level without a modifier
+      acc.push(getEagerString({
+        fieldName: child,
+        node: selection,
+        model: relationInfo.modelClass,
+        modifiers,
+      }));
+
+      return acc;
+    }
+
+    // Lists get a modifier function to filter / limit them
+    const modifierName = `f${modifiers.length}`;
+
+    // Push a filter into to the modifiers array
+    const modifier = createListModifier(selection);
+    modifiers.push({ [modifierName]: modifier });
+
+    // If query includes nodes recurse to it
+    const selectionNode = selection.selectionSet.selections.find(({ name }) => name.value === 'nodes');
+    if (selectionNode) {
+      acc.push(getEagerString({
+        // It's a list relation, so append a fX modifier function to apply list filters
+        fieldName: `${child}(${modifierName})`,
+        node: selectionNode,
+        model: relationInfo.modelClass,
+        modifiers,
+      }));
+    }
+
+    return acc;
+  }, []).join(', ');
+
+  if (subSelection.length) {
+    const subString = `[${subSelection}]`;
+    return fieldName ? `${fieldName}.${subString}` : subString;
+  }
+
+  return fieldName;
 };
 
 const createAutomaticSchema = () => {
@@ -98,7 +207,10 @@ const createAutomaticSchema = () => {
           acc[relationName] = {
             type: types[relationTypeName],
             args: typeArgs[relationTypeName],
-            // resolver
+            // resolve: (a) => {
+              // TODO if the val isn't there need to resolve it - or we export the resolvers to wire up manually
+              // console.log('RESOLVE', typeName, relationName, a, a instanceof Model);
+            // },
           };
 
           return acc;
@@ -121,7 +233,7 @@ const createAutomaticSchema = () => {
     const orderByType = new GraphQLEnumType({
       name: orderByTypeName,
       values: Object.keys(columnFields).reduce((acc, columnName) => {
-        // Don't order by id - could make this configurable using columnFields or jsonSchema
+        // Don't order by id - could make this configurable using jsonSchema?
         if (columnName === 'id') {
           return acc;
         }
@@ -134,11 +246,11 @@ const createAutomaticSchema = () => {
     // Only let you select singular by id right now
     const singleArgs = {
       id: {
-        type: GraphQLNonNull(columnFields.id.type), // required - at least until we add a second
+        type: GraphQLNonNull(columnFields.id.type),
       },
     };
 
-    const conditionType = new GraphQLInputObjectType({
+    const conditionType = new GraphQLList(new GraphQLInputObjectType({
       name: conditionTypeName,
       fields: Object.entries(columnFields).reduce((acc, [column, field]) => {
         acc[column] = {
@@ -148,15 +260,15 @@ const createAutomaticSchema = () => {
 
         return acc;
       }, {}),
-    });
+    }));
 
     const connectionArgs = {
-      conditions: { type: conditionType, defaultValue: [] },
-      limit: { type: GraphQLInt, defaultValue: 0 },
-      offset: { type: GraphQLInt, defaultValue: 0 },
+      conditions: { type: conditionType, defaultValue: defaultConditions },
+      limit: { type: GraphQLInt, defaultValue: defaultLimit },
+      offset: { type: GraphQLInt, defaultValue: defaultOffset },
       // TODO pull defaultOrder from json schema?
-      orderBy: { type: new GraphQLList(orderByType), defaultValue: 'CREATED_AT' },
-      direction: { type: types.OrderDirection, defaultValue: 'DESC' },
+      orderBy: { type: new GraphQLList(orderByType), defaultValue: defaultOrderBy },
+      direction: { type: types.OrderDirection, defaultValue: defaultDirection },
     };
 
     // Save types
@@ -169,14 +281,74 @@ const createAutomaticSchema = () => {
     typeArgs[typeName] = singleArgs;
     typeArgs[connectionTypeName] = connectionArgs;
 
+    const handleChildren = async ({ queryBuilder, node }) => {
+      // This gets modified - not really a pattern i like but :shrug:
+      const modifiers = [];
+      const eager = getEagerString({
+        node,
+        fieldName: '',
+        model,
+        modifiers,
+      });
+
+      console.log('EAGER', eager);
+
+      if (eager.length) {
+        // TODO - graph joined doesn't work with nested limits
+        // Best we could do with objection is to break it up, each list field just stop and let the next resolver do it
+        // Or we could drop it and write in SQL
+        // Just gonna finish re-building objection-graphql, which was a giant waste of time anyway
+        queryBuilder.withGraphFetched(eager)
+        // .withGraphJoined(eager)
+
+        if (modifiers.length) {
+          queryBuilder.modifiers(Object.assign(...modifiers));
+        }
+      }
+
+      // TODO try catch ?
+      const dbResponse = await queryBuilder;
+
+      return expandConnections(dbResponse);
+    };
+
+    const resolveFieldType = async (parent, args, context, info) => {
+      // TODO validate args
+      const queryBuilder = model.query().first();
+
+      const argEntries = Object.entries(args);
+      if (argEntries.length) {
+        const scopedArgs = argEntries.reduce((acc, [key, value]) => {
+          acc[`${model.tableName}.${key}`] = value;
+          return acc;
+        }, {});
+        queryBuilder.where(scopedArgs);
+      }
+
+      return handleChildren({ queryBuilder, node: info.fieldNodes[0] });
+    };
+
+    const resolveListFieldType = async (parent, args, context, info) => {
+      const queryBuilder = model.query();
+
+      // TODO curry this properly
+      createListModifier(info.fieldNodes[0])(queryBuilder);
+
+      const selectionNode = info.fieldNodes[0].selectionSet.selections.find(({ name }) => name.value === 'nodes');
+
+      return handleChildren({ queryBuilder, node: selectionNode });
+    };
+
     // Create root level query object
-    queryFields[connectionFieldName] = {
+    queryFields[fieldName] = {
       type,
       args: singleArgs,
+      resolve: resolveFieldType,
     };
-    queryFields[fieldName] = {
+    queryFields[connectionFieldName] = {
       type: connectionType,
       args: connectionArgs,
+      resolve: resolveListFieldType,
     };
   });
 

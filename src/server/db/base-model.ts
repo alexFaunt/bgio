@@ -2,8 +2,8 @@ import { Model } from 'objection';
 import { mapKeys, snakeCase, camelCase } from 'lodash';
 
 class BaseModel extends Model {
-  created_at?: string;
-  updated_at?: string;
+  createdAt: string;
+  updatedAt: string;
 
   $formatDatabaseJson(data: { [key: string]: unknown }) {
     const json = super.$formatDatabaseJson(data);
@@ -18,11 +18,12 @@ class BaseModel extends Model {
   }
 
   $beforeInsert() {
-    this.created_at = new Date().toISOString();
+    this.createdAt = new Date().toISOString();
+    this.updatedAt = new Date().toISOString();
   }
 
   $beforeUpdate() {
-    this.updated_at = new Date().toISOString();
+    this.updatedAt = new Date().toISOString();
   }
 }
 
