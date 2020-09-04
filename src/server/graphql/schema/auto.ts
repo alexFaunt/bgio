@@ -210,18 +210,20 @@ const createAutomaticSchema = () => {
           acc[relationName] = {
             type: types[relationTypeName],
             args: typeArgs[relationTypeName],
-            resolve: async (parent, args, context, info) => {
-              if (parent[relationName]) {
-                return parent[relationName];
-              }
+            // Don't need this until we work out how to use eagerJoinAlgoritm with broken up tree
+            // resolve: async (parent, args, context, info) => {
+            //   console.log('RESOLVE THING', parent);
+            //   if (parent[relationName]) {
+            //     return parent[relationName];
+            //   }
 
-              const id = `${relationName}Id`;
-              if (parent[id]) {
-                return resolvers[relationTypeName]({}, { id: parent[id] }, context, info);
-              }
+            //   const id = `${relationName}Id`;
+            //   if (parent[id]) {
+            //     return resolvers[relationTypeName]({}, { id: parent[id] }, context, info);
+            //   }
 
-              return null;
-            },
+            //   return null;
+            // },
           };
 
           return acc;
@@ -284,7 +286,7 @@ const createAutomaticSchema = () => {
     // Save args
     typeArgs[connectionTypeName] = connectionArgs;
 
-    const handleChildren = async ({ queryBuilder, node }) => {
+    const loadTree = async ({ queryBuilder, node }) => {
       // This gets modified - not really a pattern i like but :shrug:
       const modifiers = [];
       const eager = getEagerString({
@@ -326,7 +328,7 @@ const createAutomaticSchema = () => {
         queryBuilder.where(scopedArgs);
       }
 
-      return handleChildren({ queryBuilder, node: info.fieldNodes[0] });
+      return loadTree({ queryBuilder, node: info.fieldNodes[0] });
     };
 
     const resolveListFieldType = async (parent, args, context, info) => {
@@ -337,7 +339,7 @@ const createAutomaticSchema = () => {
 
       const selectionNode = info.fieldNodes[0].selectionSet.selections.find(({ name }) => name.value === 'nodes');
 
-      return handleChildren({ queryBuilder, node: selectionNode });
+      return loadTree({ queryBuilder, node: selectionNode });
     };
 
     // Create root level query object
@@ -364,7 +366,10 @@ const createAutomaticSchema = () => {
     fields: queryFields,
   });
 
-  return new GraphQLSchema({ query, types: Object.values(types) });
+  return {
+    schema: new GraphQLSchema({ query, types: Object.values(types) }),
+    resolvers,
+  };
 };
 
 export default createAutomaticSchema;

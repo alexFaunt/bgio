@@ -63,7 +63,7 @@ const generateTypes = async () => {
   }, {} as { [key: string]: string });
 
   const types = await codegen({
-    filename: '../src/server/graphql/types/codegen.ts', // Don't think this is used but it's required.
+    filename: '../src/server/graphql/definitions/codegen.ts', // Don't think this is used but it's required.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     schema: await getSchema() as any, // DNO why this works...
     documents: [],
@@ -94,7 +94,7 @@ const generateTypes = async () => {
     },
   });
 
-  const output = path.resolve(__dirname, '../src/server/graphql/types/codegen.ts');
+  const output = path.resolve(__dirname, '../src/server/graphql/definitions/codegen.ts');
 
   await writeFile(output, types);
 
