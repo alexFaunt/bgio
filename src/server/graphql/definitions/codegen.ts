@@ -62,11 +62,11 @@ export type PetConnection = {
 };
 
 export type PetConditions = {
-  id?: Maybe<Array<Maybe<Scalars['String']>>>;
-  name?: Maybe<Array<Maybe<Scalars['String']>>>;
-  longField?: Maybe<Array<Maybe<Scalars['String']>>>;
-  createdAt?: Maybe<Array<Maybe<Scalars['String']>>>;
-  updatedAt?: Maybe<Array<Maybe<Scalars['String']>>>;
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  longField?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
 };
 
 export type UserConnection = {
@@ -82,10 +82,10 @@ export enum UserOrder {
 }
 
 export type UserConditions = {
-  id?: Maybe<Array<Maybe<Scalars['String']>>>;
-  name?: Maybe<Array<Maybe<Scalars['String']>>>;
-  createdAt?: Maybe<Array<Maybe<Scalars['String']>>>;
-  updatedAt?: Maybe<Array<Maybe<Scalars['String']>>>;
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
 };
 
 export type Pet = {
@@ -289,8 +289,8 @@ export type UserResolvers<ContextType = GraphQLContext, ParentType extends Resol
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  primaryPets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPrimaryPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
-  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  primaryPets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPrimaryPetsArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPetsArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
   resolvedField?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
@@ -314,15 +314,15 @@ export type PetResolvers<ContextType = GraphQLContext, ParentType extends Resolv
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   primaryOwner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  owners?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<PetOwnersArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  owners?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<PetOwnersArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
-  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
   pet?: Resolver<Maybe<ResolversTypes['Pet']>, ParentType, ContextType, RequireFields<QueryPetArgs, 'id'>>;
-  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<QueryPetsArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
+  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<QueryPetsArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
 }>;
 
 export type CreatePersonResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreatePersonResponse'] = ResolversParentTypes['CreatePersonResponse']> = ResolversObject<{

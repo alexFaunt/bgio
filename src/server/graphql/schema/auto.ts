@@ -21,7 +21,6 @@ import { jsonSchemaToGraphQLFields } from 'server/graphql/objection/json-schema'
 
 import { camelCase, snakeCase } from 'lodash/fp';
 
-const defaultConditions = [];
 const defaultLimit = 0;
 const defaultOffset = 0;
 const defaultOrderBy = 'CREATED_AT';
@@ -82,19 +81,12 @@ const getRelationTypeName = ({ relation, modelClass }) => {
 const createListModifier = (selection) => (builder) => {
   const argMap = selection.arguments.reduce((argAcc, { name, value }) => {
     if (name.value === 'conditions') {
-      // Conditions could be an array of objects or an object
-      const conditions = value.kind === 'ObjectValue'
-        ? [value.fields]
-        : value.values.map(({ fields }) => fields);
-
       // eslint-disable-next-line no-param-reassign
-      argAcc[name.value] = conditions.map((condition) => (
-        condition.reduce((valueAcc, field) => {
-          // eslint-disable-next-line no-param-reassign
-          valueAcc[field.name.value] = field.value.value;
-          return valueAcc;
-        }, {})
-      ));
+      argAcc.conditions = value.fields.reduce((valueAcc, field) => {
+        // eslint-disable-next-line no-param-reassign
+        valueAcc[snakeCase(field.name.value)] = field.value.value;
+        return valueAcc;
+      }, {});
 
       return argAcc;
     }
@@ -112,10 +104,10 @@ const createListModifier = (selection) => (builder) => {
   builder.offset(parseInt(argMap.offset, 10) || defaultOffset);
   builder.orderByRaw(`?? ${direction} NULLS LAST`, [order.toLowerCase()]);
 
-  // TODO Conditions really needs testing...
-  (argMap.conditions || defaultConditions).forEach((conds) => {
-    builder.orWhere(conds);
-  });
+  // "andWhere" so it combos with auth modifiers
+  if (argMap.conditions) {
+    builder.andWhere(argMap.conditions);
+  }
 };
 
 const getEagerString = ({ node, modifiers, fieldName, model }) => {
@@ -131,11 +123,14 @@ const getEagerString = ({ node, modifiers, fieldName, model }) => {
       return acc;
     }
 
+    // Lists get a modifier function to filter / limit them
+    const authModifierName = `auth${getNames(relationInfo.modelClass).typeName}`;
+
     if (!isListRelation(relationInfo.relation)) {
       // It's not a list relation, so it's a single object
-      // recurse down to next level without a modifier
+
       acc.push(getEagerString({
-        fieldName: child,
+        fieldName: `${child}(${authModifierName})`,
         node: selection,
         model: relationInfo.modelClass,
         modifiers,
@@ -148,15 +143,13 @@ const getEagerString = ({ node, modifiers, fieldName, model }) => {
     const modifierName = `f${modifiers.length}`;
 
     // Push a filter into to the modifiers array
-    const modifier = createListModifier(selection);
-    modifiers.push({ [modifierName]: modifier });
+    modifiers.push({ [modifierName]: createListModifier(selection) });
 
     // If query includes nodes recurse to it
     const selectionNode = selection.selectionSet.selections.find(({ name }) => name.value === 'nodes');
     if (selectionNode) {
       acc.push(getEagerString({
-        // It's a list relation, so append a fX modifier function to apply list filters
-        fieldName: `${child}(${modifierName})`,
+        fieldName: `${child}(${modifierName},${authModifierName})`,
         node: selectionNode,
         model: relationInfo.modelClass,
         modifiers,
@@ -256,20 +249,14 @@ const createAutomaticSchema = () => {
       }, {}),
     });
 
+    // Singular instead of [{}, {}] which would be nicer, because needs to combo with auth filters, this is easier.
     const conditionType = new GraphQLList(new GraphQLInputObjectType({
       name: conditionTypeName,
-      fields: Object.entries(columnFields).reduce((acc, [column, field]) => {
-        acc[column] = {
-          type: new GraphQLList(field.type),
-        };
-        // Can add the other filters here e.g. gt/lt/like
-
-        return acc;
-      }, {}),
+      fields: columnFields,
     }));
 
     const connectionArgs = {
-      conditions: { type: conditionType, defaultValue: defaultConditions },
+      conditions: { type: conditionType },
       limit: { type: GraphQLInt, defaultValue: defaultLimit },
       offset: { type: GraphQLInt, defaultValue: defaultOffset },
       // TODO pull defaultOrder from json schema?
@@ -289,6 +276,7 @@ const createAutomaticSchema = () => {
     const loadTree = async ({ queryBuilder, node }) => {
       // This gets modified - not really a pattern i like but :shrug:
       const modifiers = [];
+
       const eager = getEagerString({
         node,
         fieldName: '',
@@ -297,6 +285,7 @@ const createAutomaticSchema = () => {
       });
 
       if (eager.length) {
+        console.log('EAGER', eager);
         // TODO - graph joined doesn't work with nested limits
         // Best we could do with objection is to break it up, each list field just stop and let the next resolver do it
         // Or we could drop it and write in SQL
@@ -304,9 +293,8 @@ const createAutomaticSchema = () => {
         queryBuilder.withGraphFetched(eager);
         // .withGraphJoined(eager)
 
-        if (modifiers.length) {
-          queryBuilder.modifiers(Object.assign(...modifiers));
-        }
+        const argModifiers = Object.assign({}, ...modifiers);
+        queryBuilder.modifiers(argModifiers);
       }
 
       // TODO try catch ?
@@ -317,7 +305,9 @@ const createAutomaticSchema = () => {
 
     const resolveFieldType = async (parent, args, context, info) => {
       // TODO validate args
+      // TODO might need to .modify() this with auth arg for right type
       const queryBuilder = model.query().first();
+      queryBuilder.modifiers(context.authModifiers);
 
       const argEntries = Object.entries(args);
       if (argEntries.length) {
@@ -334,8 +324,13 @@ const createAutomaticSchema = () => {
     const resolveListFieldType = async (parent, args, context, info) => {
       const queryBuilder = model.query();
 
-      // TODO curry this properly...
-      createListModifier(info.fieldNodes[0])(queryBuilder);
+      // Add list modifiers to top level query
+      queryBuilder.modify(createListModifier(info.fieldNodes[0]));
+
+      // Add auth modifiers where needed
+      queryBuilder.modifiers(context.authModifiers);
+      // TODO might need to .modify() this with auth arg for right type
+      queryBuilder.modify(`auth${typeName}`);
 
       const selectionNode = info.fieldNodes[0].selectionSet.selections.find(({ name }) => name.value === 'nodes');
 
