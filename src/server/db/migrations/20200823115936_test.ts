@@ -23,6 +23,8 @@ export const { up, down } = migrator(__filename, {
       createPetId(table).primary();
       table.string('name');
       table.string('long_field');
+      table.string('primary_owner_id').notNullable();
+      table.foreign('primary_owner_id').references('id').inTable('users');
       table.timestamps(true, true);
     });
 

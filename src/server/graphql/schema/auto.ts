@@ -28,6 +28,10 @@ const defaultOrderBy = 'CREATED_AT';
 const defaultDirection = 'DESC';
 
 const expandConnections = (item) => {
+  if (!item) {
+    return null;
+  }
+
   if (Array.isArray(item)) {
     return {
       nodes: item.map(expandConnections),
@@ -69,7 +73,6 @@ const getRelationTypeName = ({ relation, modelClass }) => {
   }
 
   if (isListRelation(relation)) {
-    // TODO
     return connectionTypeName;
   }
 
@@ -79,7 +82,7 @@ const getRelationTypeName = ({ relation, modelClass }) => {
 const createListModifier = (selection) => (builder) => {
   const argMap = selection.arguments.reduce((argAcc, { name, value }) => {
     if (name.value === 'conditions') {
-      // TODO - conditions could be an array of objects or an object
+      // Conditions could be an array of objects or an object
       const conditions = value.kind === 'ObjectValue'
         ? [value.fields]
         : value.values.map(({ fields }) => fields);
@@ -109,7 +112,7 @@ const createListModifier = (selection) => (builder) => {
   builder.offset(parseInt(argMap.offset, 10) || defaultOffset);
   builder.orderByRaw(`?? ${direction} NULLS LAST`, [order.toLowerCase()]);
 
-  // TODO Conditions really needs testing
+  // TODO Conditions really needs testing...
   (argMap.conditions || defaultConditions).forEach((conds) => {
     builder.orWhere(conds);
   });
@@ -121,7 +124,6 @@ const getEagerString = ({ node, modifiers, fieldName, model }) => {
   const subSelection = selections.reduce((acc, selection) => {
     const child = selection.name.value;
 
-    // TODO - this model is the top level thing - not the recursive one...
     const relationInfo = model.relationMappings[child];
 
     // It's not a relation so it's just a column or none of our business so the eager string stops here
@@ -184,6 +186,7 @@ const createAutomaticSchema = () => {
   };
   const typeArgs = {};
   const queryFields = {};
+  const resolvers = {};
 
   models.forEach((model: Model) => {
     const {
@@ -207,10 +210,18 @@ const createAutomaticSchema = () => {
           acc[relationName] = {
             type: types[relationTypeName],
             args: typeArgs[relationTypeName],
-            // resolve: (a) => {
-              // TODO if the val isn't there need to resolve it - or we export the resolvers to wire up manually
-              // console.log('RESOLVE', typeName, relationName, a, a instanceof Model);
-            // },
+            resolve: async (parent, args, context, info) => {
+              if (parent[relationName]) {
+                return parent[relationName];
+              }
+
+              const id = `${relationName}Id`;
+              if (parent[id]) {
+                return resolvers[relationTypeName]({}, { id: parent[id] }, context, info);
+              }
+
+              return null;
+            },
           };
 
           return acc;
@@ -243,13 +254,6 @@ const createAutomaticSchema = () => {
       }, {}),
     });
 
-    // Only let you select singular by id right now
-    const singleArgs = {
-      id: {
-        type: GraphQLNonNull(columnFields.id.type),
-      },
-    };
-
     const conditionType = new GraphQLList(new GraphQLInputObjectType({
       name: conditionTypeName,
       fields: Object.entries(columnFields).reduce((acc, [column, field]) => {
@@ -278,7 +282,6 @@ const createAutomaticSchema = () => {
     types[conditionTypeName] = conditionType;
 
     // Save args
-    typeArgs[typeName] = singleArgs;
     typeArgs[connectionTypeName] = connectionArgs;
 
     const handleChildren = async ({ queryBuilder, node }) => {
@@ -291,14 +294,12 @@ const createAutomaticSchema = () => {
         modifiers,
       });
 
-      console.log('EAGER', eager);
-
       if (eager.length) {
         // TODO - graph joined doesn't work with nested limits
         // Best we could do with objection is to break it up, each list field just stop and let the next resolver do it
         // Or we could drop it and write in SQL
         // Just gonna finish re-building objection-graphql, which was a giant waste of time anyway
-        queryBuilder.withGraphFetched(eager)
+        queryBuilder.withGraphFetched(eager);
         // .withGraphJoined(eager)
 
         if (modifiers.length) {
@@ -331,7 +332,7 @@ const createAutomaticSchema = () => {
     const resolveListFieldType = async (parent, args, context, info) => {
       const queryBuilder = model.query();
 
-      // TODO curry this properly
+      // TODO curry this properly...
       createListModifier(info.fieldNodes[0])(queryBuilder);
 
       const selectionNode = info.fieldNodes[0].selectionSet.selections.find(({ name }) => name.value === 'nodes');
@@ -342,9 +343,15 @@ const createAutomaticSchema = () => {
     // Create root level query object
     queryFields[fieldName] = {
       type,
-      args: singleArgs,
+      args: {
+        id: {
+          type: GraphQLNonNull(columnFields.id.type),
+        },
+      },
       resolve: resolveFieldType,
     };
+    resolvers[typeName] = resolveFieldType;
+
     queryFields[connectionFieldName] = {
       type: connectionType,
       args: connectionArgs,

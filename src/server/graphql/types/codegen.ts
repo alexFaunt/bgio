@@ -100,11 +100,6 @@ export type Pet = {
 };
 
 
-export type PetPrimaryOwnerArgs = {
-  id: Scalars['String'];
-};
-
-
 export type PetOwnersArgs = {
   conditions?: Maybe<Array<Maybe<UserConditions>>>;
   limit?: Maybe<Scalars['Int']>;
@@ -318,7 +313,7 @@ export type PetResolvers<ContextType = GraphQLContext, ParentType extends Resolv
   longField?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  primaryOwner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<PetPrimaryOwnerArgs, 'id'>>;
+  primaryOwner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   owners?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<PetOwnersArgs, 'conditions' | 'limit' | 'offset' | 'orderBy' | 'direction'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
