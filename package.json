@@ -10,7 +10,9 @@
     "build:client": "webpack",
     "qa": "yarn tsc && yarn lint && yarn test",
     "lint": "eslint src",
-    "tsc": "tsc --noImplicitAny",
+    "tsc": "yarn generate:types && yarn tsc:client && yarn tsc:server",
+    "tsc:client": "tsc --noImplicitAny --project tsconfig.client.json",
+    "tsc:server": "tsc --noImplicitAny --project tsconfig.server.json",
     "test": "echo 'TODO - I should really write some tests'",
     "migrate": "ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:latest;",
     "rollback": "ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:rollback;",
@@ -85,6 +87,7 @@
   "devDependencies": {
     "@types/convict": "^5.2.1",
     "@types/dotenv": "^8.2.0",
+    "@types/pluralize": "^0.0.29",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.9.1",
     "babel-watch": "^7.0.0",

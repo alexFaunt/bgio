@@ -1,10 +1,11 @@
 import { loadFiles } from '@graphql-tools/load-files';
 import fs from 'fs';
 import { promisify } from 'util';
+import { AutoResolvers } from 'server/graphql/definitions';
 
 const readdir = promisify(fs.readdir);
 
-const getMutationDefinitions = async (autoResolvers) => {
+const getMutationDefinitions = async (autoResolvers: AutoResolvers) => {
   const [firstMutation, ...mutations] = await loadFiles('./src/server/graphql/mutations/**/schema.gql');
 
   const dir = await readdir(__dirname);

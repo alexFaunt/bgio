@@ -7,4 +7,5 @@ type State = {
 };
 
 // TODO - where to put this when the auth middleware exists
-export type Context = KoaContext<State>;
+// TODO how the fuck do you add custom state to Koa app
+export type Context = KoaContext;

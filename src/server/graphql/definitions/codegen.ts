@@ -3,7 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import IndexModel from '../../db/models/index';
 import PetModel from '../../db/models/pet';
 import UserModel from '../../db/models/user';
 import { GraphQLResolveInfo } from 'graphql';
@@ -350,3 +349,10 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
  * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
  */
 export type IResolvers<ContextType = GraphQLContext> = Resolvers<ContextType>;
+
+export type AutoResolvers = {
+  Pet: ResolverFn<ResolverTypeWrapper<Pet>, unknown, GraphQLContext, { id: string }>,
+  User: ResolverFn<ResolverTypeWrapper<User>, unknown, GraphQLContext, { id: string }>,
+}
+type CreatePersonResolverResponse = Record<keyof Omit<CreatePersonResponse, '__typename'>, { id: string }>;
+export type CreatePersonResolver = Resolver<CreatePersonResolverResponse, unknown, GraphQLContext, RequireFields<MutationCreatePersonArgs, 'input'>>;

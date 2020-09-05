@@ -1,7 +1,7 @@
 import getConfig from 'server/config';
 import createServer from 'server/server';
-import fetch from 'node-fetch';
-import PetModel from 'server/db/models/pet';
+// import fetch from 'node-fetch';
+// import PetModel from 'server/db/models/pet';
 
 const uncaughtError = (error: Error) => {
   console.error('[fatal]', error);

@@ -2,8 +2,8 @@ import { Model } from 'objection';
 import { mapKeys, snakeCase, camelCase } from 'lodash';
 
 class BaseModel extends Model {
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 
   $formatDatabaseJson(data: { [key: string]: unknown }) {
     const json = super.$formatDatabaseJson(data);

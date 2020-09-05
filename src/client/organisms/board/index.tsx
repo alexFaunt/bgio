@@ -1,7 +1,8 @@
 import React from 'react';
 
 type Props = {
-  ctx: { gameover: boolean }; // TODO board game type
+  // eslint-disable-next-line
+  ctx: any, // TODO
 };
 
 const Board = ({ ctx }: Props) => {

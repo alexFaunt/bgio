@@ -30,7 +30,7 @@ const createPool = ({ connection, pool, debug = true }: PoolArgs) => {
     // Knex has a debug option to print every SQL statement ran, but it's not very good for
     // our purposes (multiline, not interpolated, etc), so we need to hack it a bit to get
     // something more readable.
-    instance.client.on('query', (statement) => {
+    instance.client.on('query', (statement: { [key: string]: string }) => {
       // eslint-disable-next-line no-underscore-dangle
       const query = instance.client._formatQuery(statement.sql, statement.bindings, 'UTC');
       return console.debug(query);

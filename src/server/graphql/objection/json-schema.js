@@ -1,3 +1,5 @@
+/* eslint-disable */
+// Taken from objection-graphql - needs tidying up
 const _ = require('lodash');
 const graphqlRoot = require('graphql');
 
@@ -5,8 +7,10 @@ const {
   GraphQLObjectType, GraphQLEnumType, GraphQLBoolean, GraphQLString, GraphQLFloat, GraphQLList, GraphQLInt,
 } = graphqlRoot;
 
-const utils = require('./utils');
-
+function isExcluded(opt, prop) {
+  return (opt.include && opt.include.indexOf(prop) === -1)
+      || (opt.exclude && opt.exclude.indexOf(prop) !== -1);
+}
 function jsonSchemaToGraphQLFields(jsonSchema, opt) {
   const ctx = _.defaults(opt || {}, {
     include: null,
@@ -19,7 +23,7 @@ function jsonSchemaToGraphQLFields(jsonSchema, opt) {
   const fields = {};
 
   _.forOwn(jsonSchema.properties, (propSchema, propName) => {
-    if (utils.isExcluded(ctx, propName)) {
+    if (isExcluded(ctx, propName)) {
       return;
     }
 

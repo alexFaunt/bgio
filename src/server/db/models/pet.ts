@@ -13,8 +13,8 @@ class PetModel extends BaseModel {
       id: { type: 'string' },
       name: { type: 'string', minLength: 5, maxLength: 255 },
       longField: { type: 'string' }, // TODO should this be camel or not?
-       // TODO can it be required?
-       // TODO shared common ones?
+      // TODO can it be required?
+      // TODO shared common ones?
       createdAt: { type: 'string' }, // TODO date validator?
       updatedAt: { type: 'string' }, // TODO date validator?
     },

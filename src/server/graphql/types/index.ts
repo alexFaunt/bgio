@@ -20,7 +20,7 @@ const getMutationDefinitions = async () => {
     acc[`${camelCaseFileName.substring(0, 1).toUpperCase()}${camelCaseFileName.substring(1)}`] = resolver;
 
     return acc;
-  }, {});
+  }, {} as { [key: string]: unknown });
 
   return {
     typeDefs,

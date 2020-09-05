@@ -1,12 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// Given up typing this file don't really care proof is in the pudding and it only deals with auto generated stuff
+// means it can't be statically analysed anyway so who cares.
+// @ts-nocheck
+
 import pluralize from 'pluralize';
-import {
-  Model,
-  HasOneRelation,
-  BelongsToOneRelation,
-  HasOneThroughRelation,
-  HasManyRelation,
-  ManyToManyRelation,
-} from 'objection';
+import { Model, RelationType } from 'objection';
 import {
   GraphQLObjectType,
   GraphQLSchema,
@@ -15,18 +13,26 @@ import {
   GraphQLNonNull,
   GraphQLEnumType,
   GraphQLInputObjectType,
+  GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
+  FieldNode,
+  ObjectValueNode,
 } from 'graphql';
 import models from 'server/db/models';
 import { jsonSchemaToGraphQLFields } from 'server/graphql/objection/json-schema';
+import { AutoResolvers } from 'server/graphql/definitions';
 
 import { camelCase, snakeCase } from 'lodash/fp';
+import Knex from 'knex';
 
 const defaultLimit = 0;
 const defaultOffset = 0;
 const defaultOrderBy = 'CREATED_AT';
 const defaultDirection = 'DESC';
 
-const expandConnections = (item) => {
+type ModelType = typeof Model;
+
+const expandConnections = (item: unknown): unknown => {
   if (!item) {
     return null;
   }
@@ -41,13 +47,13 @@ const expandConnections = (item) => {
     return Object.entries(item).reduce((acc, [key, child]) => {
       acc[key] = expandConnections(child);
       return acc;
-    }, {});
+    }, {} as { [key: string]: unknown });
   }
 
   return item;
 };
 
-const getNames = (model: Model) => {
+const getNames = (model: ModelType) => {
   const fieldName = camelCase(pluralize.singular(model.tableName));
   const connectionFieldName = camelCase(model.tableName);
   const typeName = `${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`;
@@ -58,15 +64,17 @@ const getNames = (model: Model) => {
   return { fieldName, connectionFieldName, typeName, connectionTypeName, orderByTypeName, conditionTypeName };
 };
 
-const isListRelation = (relation) => relation === HasManyRelation || relation === ManyToManyRelation;
+const isListRelation = (relation: RelationType) => (
+  relation === Model.HasManyRelation || relation === Model.ManyToManyRelation
+);
 
-const getRelationTypeName = ({ relation, modelClass }) => {
+const getRelationTypeName = ({ relation, modelClass }: { relation: RelationType, modelClass: ModelType }) => {
   const { typeName, connectionTypeName } = getNames(modelClass);
 
   if (
-    relation === HasOneRelation ||
-    relation === BelongsToOneRelation ||
-    relation === HasOneThroughRelation
+    relation === Model.HasOneRelation ||
+    relation === Model.BelongsToOneRelation ||
+    relation === Model.HasOneThroughRelation
   ) {
     return typeName;
   }
@@ -78,15 +86,15 @@ const getRelationTypeName = ({ relation, modelClass }) => {
   throw new Error(`relation type "${relation.constructor.name}" is not supported`);
 };
 
-const createListModifier = (selection) => (builder) => {
-  const argMap = selection.arguments.reduce((argAcc, { name, value }) => {
+const createListModifier = (selection: FieldNode) => (builder: Knex) => {
+  const argMap = (selection?.arguments || []).reduce((argAcc: { [key: string]: unknown }, { name, value }) => {
     if (name.value === 'conditions') {
       // eslint-disable-next-line no-param-reassign
-      argAcc.conditions = value.fields.reduce((valueAcc, field) => {
+      argAcc.conditions = (value as ObjectValueNode).fields.reduce((valueAcc, field) => {
         // eslint-disable-next-line no-param-reassign
-        valueAcc[snakeCase(field.name.value)] = field.value.value;
+        valueAcc[snakeCase(field.name.value)] = (field.value as unknown).value;
         return valueAcc;
-      }, {});
+      }, {} as { [key: string]: unknown });
 
       return argAcc;
     }
@@ -94,7 +102,7 @@ const createListModifier = (selection) => (builder) => {
     argAcc[name.value] = value.value;
 
     return argAcc;
-  }, {});
+  }, {} as { [key: string]: unknown });
 
   // TODO order could be an array
   const order = argMap.orderBy || defaultOrderBy;
@@ -177,12 +185,12 @@ const createAutomaticSchema = () => {
       },
     }),
   };
-  const typeArgs = {};
-  const queryFields = {};
-  const resolvers = {};
-  const defaultAuthModifiers = {};
+  const typeArgs: { [key: string]: GraphQLFieldConfigArgumentMap } = {};
+  const queryFields: { [key: string]: GraphQLFieldConfig } = {};
+  const resolvers = {} as AutoResolvers;
+  const defaultAuthModifiers: { [key: string]: () => void } = {};
 
-  models.forEach((model: Model) => {
+  models.forEach((model: ModelType) => {
     const {
       fieldName,
       connectionFieldName,
