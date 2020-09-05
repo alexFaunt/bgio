@@ -3,6 +3,7 @@
   "version": "0.0.4",
   "description": "TODO",
   "main": "TODO",
+  "repository": "git@github.com:alexFaunt/bgio.git",
   "scripts": {
     "start:dev": "concurrently \"yarn start:client:dev\" \"docker-compose up\" \"WATCH=true yarn generate:types\"",
     "start:client:dev": "webpack-dev-server",
