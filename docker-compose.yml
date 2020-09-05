@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  bgio-server:
+  server:
     build:
       context: .
       dockerfile: Dockerfile

@@ -1,21 +1,23 @@
 {
-  "name": "bgio-poker",
-  "version": "0.0.3",
-  "description": "hello there",
-  "main": "build/server/index.js",
+  "name": "bgio",
+  "version": "0.0.4",
+  "description": "TODO",
+  "main": "TODO",
   "scripts": {
     "start:dev": "concurrently \"yarn start:client:dev\" \"docker-compose up\" \"WATCH=true yarn generate:types\"",
     "start:client:dev": "webpack-dev-server",
     "start:server:dev": "babel-watch --extensions '.js,.json,.ts,.gql' --watch=src/server/graphql/mutations --watch=src/server/graphql/types ./src/server/index.ts",
     "build:client": "webpack",
+    "qa": "yarn tsc && yarn lint && yarn test",
     "lint": "eslint src",
     "tsc": "tsc --noImplicitAny",
+    "test": "echo 'TODO - I should really write some tests'",
     "migrate": "ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:latest;",
     "rollback": "ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:rollback;",
     "generate:migration": "hygen migration create",
     "generate:types": "babel-node --extensions '.js,.json,.ts' ./scripts/generate-types.ts"
   },
-  "author": "",
+  "author": "alexfaunt",
   "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.11.1",
@@ -97,8 +99,15 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
+    "husky": "^4.2.5",
     "hygen": "^6.0.4",
     "ts-node-dev": "^1.0.0-pre.57",
     "tsconfig-paths": "^3.9.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "git diff --name-only --cached | grep -E \".*\\.gql$\" >/dev/null && yarn generate:types && git add src/server/graphql/definitions || true",
+      "pre-push": "yarn qa"
+    }
   }
 }

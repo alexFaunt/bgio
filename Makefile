@@ -24,7 +24,7 @@ up-server:
 	NETWORK_IP=${NETWORK_IP} docker-compose up
 
 migrate:
-	docker-compose exec bgio-server yarn migrate
+	docker-compose exec server yarn migrate
 
 rollback:
-	docker-compose exec bgio-server yarn rollback
+	docker-compose exec server yarn rollback
