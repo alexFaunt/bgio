@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "concurrently \"yarn start:client:dev\" \"docker-compose up\" \"WATCH=true yarn generate:types\"",
     "start:client:dev": "webpack-dev-server",
-    "start:server:dev": "babel-watch --extensions '.js,.json,.ts' --watch=src/server/graphql/mutations ./src/server/index.ts",
+    "start:server:dev": "babel-watch --extensions '.js,.json,.ts,.gql' --watch=src/server/graphql/mutations --watch=src/server/graphql/types ./src/server/index.ts",
     "build:client": "webpack",
     "lint": "eslint src",
     "tsc": "tsc --noImplicitAny",

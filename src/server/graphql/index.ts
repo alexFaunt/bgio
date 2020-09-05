@@ -23,15 +23,10 @@ const createApolloServer = async ({ connection, pool }: CreateApolloServerArgs) 
   return new ApolloServer({
     schema,
     context: async ({ ctx: { state: { auth } } }: { ctx: Context }) => {
-      // build up auth functions - invoked when needed so can be lazy
+      // build up auth functions - invoked when needed so can be lazy - defaults to no modifier
       const authModifiers = {
         get authUser() {
           console.log('authUser');
-          return publicAuth;
-        },
-        get authPet() {
-          console.log('authPet');
-          return (qb) => qb.andWhere({ id: 'b' });
           return publicAuth;
         },
       };

@@ -180,6 +180,7 @@ const createAutomaticSchema = () => {
   const typeArgs = {};
   const queryFields = {};
   const resolvers = {};
+  const defaultAuthModifiers = {};
 
   models.forEach((model: Model) => {
     const {
@@ -249,10 +250,10 @@ const createAutomaticSchema = () => {
       }, {}),
     });
 
-    // Singular instead of [{}, {}] which would be nicer, because needs to combo with auth filters, this is easier.
+    // Singular instead of [{}, {}] which would be nicer, because needs to combo with auth filters, this is just easier.
     const conditionType = new GraphQLList(new GraphQLInputObjectType({
       name: conditionTypeName,
-      fields: columnFields,
+      fields: columnFields, // TODO - may want to exclude fields from conditions as they should have DB indexes
     }));
 
     const connectionArgs = {
@@ -269,6 +270,7 @@ const createAutomaticSchema = () => {
     types[connectionTypeName] = connectionType;
     types[orderByTypeName] = orderByType;
     types[conditionTypeName] = conditionType;
+    defaultAuthModifiers[`auth${typeName}`] = () => null;
 
     // Save args
     typeArgs[connectionTypeName] = connectionArgs;
@@ -290,8 +292,8 @@ const createAutomaticSchema = () => {
         // Best we could do with objection is to break it up, each list field just stop and let the next resolver do it
         // Or we could drop it and write in SQL
         // Just gonna finish re-building objection-graphql, which was a giant waste of time anyway
+        // I think best course of action would be to ask him what the limitation is...
         queryBuilder.withGraphFetched(eager);
-        // .withGraphJoined(eager)
 
         const argModifiers = Object.assign({}, ...modifiers);
         queryBuilder.modifiers(argModifiers);
@@ -305,9 +307,10 @@ const createAutomaticSchema = () => {
 
     const resolveFieldType = async (parent, args, context, info) => {
       // TODO validate args
-      // TODO might need to .modify() this with auth arg for right type
+
       const queryBuilder = model.query().first();
-      queryBuilder.modifiers(context.authModifiers);
+      queryBuilder.modifiers({ ...defaultAuthModifiers, ...context.authModifiers });
+      queryBuilder.modify(`auth${typeName}`);
 
       const argEntries = Object.entries(args);
       if (argEntries.length) {
@@ -328,8 +331,7 @@ const createAutomaticSchema = () => {
       queryBuilder.modify(createListModifier(info.fieldNodes[0]));
 
       // Add auth modifiers where needed
-      queryBuilder.modifiers(context.authModifiers);
-      // TODO might need to .modify() this with auth arg for right type
+      queryBuilder.modifiers({ ...defaultAuthModifiers, ...context.authModifiers });
       queryBuilder.modify(`auth${typeName}`);
 
       const selectionNode = info.fieldNodes[0].selectionSet.selections.find(({ name }) => name.value === 'nodes');
