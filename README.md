@@ -19,3 +19,10 @@ TODO next up is auth middleware on koa + pull out info into both servers
 
 Also the models / migrations for users/pets need deleting obvs
 Also need a model for any BGIO stuff we want to expose
+
+
+* Cards
+https://www.me.uk/cards/makeadeck.cgi
+
+* poker
+https://github.com/goldfire/pokersolver

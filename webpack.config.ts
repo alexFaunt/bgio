@@ -27,6 +27,7 @@ export default {
     contentBase: [
       path.resolve(__dirname, 'src/public'),
     ],
+    contentBasePublicPath: '/static',
     historyApiFallback: true,
     host: '0.0.0.0',
     // hot: true,

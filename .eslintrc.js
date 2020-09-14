@@ -3,12 +3,14 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'filenames',
+    'jest',
   ],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'airbnb',
     'airbnb-typescript',
     'eslint-config-airbnb/hooks',
+    'plugin:jest/recommended',
   ],
   settings: {
     'import/resolver': {
@@ -47,6 +49,8 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'import/no-cycle': 'off',
 
+    'react/require-default-props': 'off',
+
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/lines-between-class-members': 'off',
     // Sadly this is too zealous, typescript can infer more
@@ -66,9 +70,18 @@ module.exports = {
       },
     },
     {
+      files: ['*.test.ts'],
+      env: {
+        jest: true,
+      },
+      rules: {
+        'jest/expect-expect': 'error',
+      }
+    },
+    {
       files: ['src/common/game/*'],
       rules: {
-        'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['G'] }],
+        'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['acc', 'G'] }],
       },
     },
     {
