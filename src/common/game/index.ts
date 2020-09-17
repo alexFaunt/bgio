@@ -14,8 +14,6 @@ import shortId from 'shortid';
 import * as pokersolver from 'pokersolver';
 import { INVALID_MOVE } from 'boardgame.io/core';
 
-global.pokersolver = pokersolver;
-
 const sevenHandPokerConfig = {
   startingHandSize: 7,
   drawCount: 3,

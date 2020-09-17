@@ -17,6 +17,7 @@ import {
   GraphQLFieldConfigArgumentMap,
   FieldNode,
   ObjectValueNode,
+  GraphQLString,
 } from 'graphql';
 import models from 'server/db/models';
 import { jsonSchemaToGraphQLFields } from 'server/graphql/objection/json-schema';
@@ -41,6 +42,10 @@ const expandConnections = (item: unknown): unknown => {
     return {
       nodes: item.map(expandConnections),
     };
+  }
+
+  if (item instanceof Date) {
+    return item;
   }
 
   if (typeof item === 'object') {
@@ -190,7 +195,7 @@ const createAutomaticSchema = () => {
   const resolvers = {} as AutoResolvers;
   const defaultAuthModifiers: { [key: string]: () => void } = {};
 
-  models.forEach((model: ModelType) => {
+  Object.values(models).forEach((model: ModelType) => {
     const {
       fieldName,
       connectionFieldName,
@@ -210,6 +215,7 @@ const createAutomaticSchema = () => {
           const relationTypeName = getRelationTypeName(relation);
 
           acc[relationName] = {
+            // TODO notnullable or not...
             type: types[relationTypeName],
             args: typeArgs[relationTypeName],
             // Don't need this until we work out how to use eagerJoinAlgoritm with broken up tree
@@ -278,7 +284,7 @@ const createAutomaticSchema = () => {
     types[connectionTypeName] = connectionType;
     types[orderByTypeName] = orderByType;
     types[conditionTypeName] = conditionType;
-    defaultAuthModifiers[`auth${typeName}`] = () => null;
+    defaultAuthModifiers[`auth${typeName}`] = () => {};
 
     // Save args
     typeArgs[connectionTypeName] = connectionArgs;
@@ -315,14 +321,17 @@ const createAutomaticSchema = () => {
 
     const resolveFieldType = async (parent, args, context, info) => {
       // TODO validate args
-
       const queryBuilder = model.query().first();
+
       queryBuilder.modifiers({ ...defaultAuthModifiers, ...context.authModifiers });
       queryBuilder.modify(`auth${typeName}`);
 
-      const argEntries = Object.entries(args);
-      if (argEntries.length) {
-        const scopedArgs = argEntries.reduce((acc, [key, value]) => {
+      const argEntries = args && Object.entries(args);
+      const parentEntries = parent && Object.entries(parent);
+
+      const criteria = argEntries && argEntries.length ? argEntries : parentEntries;
+      if (criteria && criteria.length) {
+        const scopedArgs = criteria.reduce((acc, [key, value]) => {
           acc[`${model.tableName}.${key}`] = value;
           return acc;
         }, {});

@@ -33,10 +33,10 @@ const generateTypes = async () => {
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
   const getSchema = require('server/graphql/schema').default;
 
-  const modelsList = await readdir(path.resolve(__dirname, '../src/server/db/models'));
+  const modelsMap = await readdir(path.resolve(__dirname, '../src/server/db/models'));
   const mutationsList = await readdir(path.resolve(__dirname, '../src/server/graphql/mutations'));
 
-  const modelDefs = modelsList
+  const modelDefs = Object.values(modelsMap)
     .filter((model) => model !== 'index.ts')
     .map((model) => {
       const filename = model.substring(0, model.length - 3);

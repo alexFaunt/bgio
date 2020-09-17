@@ -37,6 +37,10 @@ export default {
         target: `http://localhost:${SERVER_PORT}`,
         changeOrigin: true,
       },
+      [`/graphql`]: {
+        target: `http://localhost:${SERVER_PORT}`,
+        changeOrigin: true,
+      },
     },
     watchOptions: {
       aggregateTimeout: 500,
@@ -110,3 +114,5 @@ export default {
     publicPath: '/',
   },
 };
+
+// Request URL: http://localhost:2000/main/%5Bfullhash%5D.js

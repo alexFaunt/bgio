@@ -3,7 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import PetModel from '../../db/models/pet';
 import UserModel from '../../db/models/user';
 import { GraphQLResolveInfo } from 'graphql';
 import { GraphQLContext } from './context';
@@ -31,41 +30,7 @@ export type User = {
   name?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
-  primaryPets: PetConnection;
-  pets: PetConnection;
   resolvedField: Scalars['String'];
-};
-
-
-export type UserPrimaryPetsArgs = {
-  conditions?: Maybe<Array<Maybe<PetConditions>>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<Array<Maybe<PetOrder>>>;
-  direction?: Maybe<OrderDirection>;
-};
-
-
-export type UserPetsArgs = {
-  conditions?: Maybe<Array<Maybe<PetConditions>>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<Array<Maybe<PetOrder>>>;
-  direction?: Maybe<OrderDirection>;
-};
-
-export type PetConnection = {
-  __typename?: 'PetConnection';
-  nodes: Array<Maybe<Pet>>;
-  totalCount: Scalars['Int'];
-};
-
-export type PetConditions = {
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  longField?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['String']>;
 };
 
 export type UserConnection = {
@@ -87,39 +52,10 @@ export type UserConditions = {
   updatedAt?: Maybe<Scalars['String']>;
 };
 
-export type Pet = {
-  __typename?: 'Pet';
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  longField?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['String']>;
-  primaryOwner?: Maybe<User>;
-  owners: UserConnection;
-};
-
-
-export type PetOwnersArgs = {
-  conditions?: Maybe<Array<Maybe<UserConditions>>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<Array<Maybe<UserOrder>>>;
-  direction?: Maybe<OrderDirection>;
-};
-
-export enum PetOrder {
-  NAME = 'NAME',
-  LONG_FIELD = 'LONG_FIELD',
-  CREATED_AT = 'CREATED_AT',
-  UPDATED_AT = 'UPDATED_AT'
-}
-
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<User>;
   users: UserConnection;
-  pet?: Maybe<Pet>;
-  pets: PetConnection;
 };
 
 
@@ -136,37 +72,23 @@ export type QueryUsersArgs = {
   direction?: Maybe<OrderDirection>;
 };
 
-
-export type QueryPetArgs = {
-  id: Scalars['String'];
-};
-
-
-export type QueryPetsArgs = {
-  conditions?: Maybe<Array<Maybe<PetConditions>>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<Array<Maybe<PetOrder>>>;
-  direction?: Maybe<OrderDirection>;
-};
-
-export type CreatePersonInput = {
+export type CreateUserInput = {
   name: Scalars['String'];
 };
 
-export type CreatePersonResponse = {
-  __typename?: 'CreatePersonResponse';
+export type CreateUserResponse = {
+  __typename?: 'CreateUserResponse';
   user: User;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createPerson: CreatePersonResponse;
+  createUser: CreateUserResponse;
 };
 
 
-export type MutationCreatePersonArgs = {
-  input: CreatePersonInput;
+export type MutationCreateUserArgs = {
+  input: CreateUserInput;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -251,17 +173,13 @@ export type ResolversTypes = ResolversObject<{
   OrderDirection: OrderDirection;
   User: ResolverTypeWrapper<UserModel>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
-  PetConnection: ResolverTypeWrapper<Omit<PetConnection, 'nodes'> & { nodes: Array<Maybe<ResolversTypes['Pet']>> }>;
-  PetConditions: PetConditions;
   UserConnection: ResolverTypeWrapper<Omit<UserConnection, 'nodes'> & { nodes: Array<Maybe<ResolversTypes['User']>> }>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   UserOrder: UserOrder;
   UserConditions: UserConditions;
-  Pet: ResolverTypeWrapper<PetModel>;
-  PetOrder: PetOrder;
   Query: ResolverTypeWrapper<{}>;
-  CreatePersonInput: CreatePersonInput;
-  CreatePersonResponse: ResolverTypeWrapper<Omit<CreatePersonResponse, 'user'> & { user: ResolversTypes['User'] }>;
+  CreateUserInput: CreateUserInput;
+  CreateUserResponse: ResolverTypeWrapper<Omit<CreateUserResponse, 'user'> & { user: ResolversTypes['User'] }>;
   Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 }>;
@@ -270,15 +188,12 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   User: UserModel;
   String: Scalars['String'];
-  Int: Scalars['Int'];
-  PetConnection: Omit<PetConnection, 'nodes'> & { nodes: Array<Maybe<ResolversParentTypes['Pet']>> };
-  PetConditions: PetConditions;
   UserConnection: Omit<UserConnection, 'nodes'> & { nodes: Array<Maybe<ResolversParentTypes['User']>> };
+  Int: Scalars['Int'];
   UserConditions: UserConditions;
-  Pet: PetModel;
   Query: {};
-  CreatePersonInput: CreatePersonInput;
-  CreatePersonResponse: Omit<CreatePersonResponse, 'user'> & { user: ResolversParentTypes['User'] };
+  CreateUserInput: CreateUserInput;
+  CreateUserResponse: Omit<CreateUserResponse, 'user'> & { user: ResolversParentTypes['User'] };
   Mutation: {};
   Boolean: Scalars['Boolean'];
 }>;
@@ -288,15 +203,7 @@ export type UserResolvers<ContextType = GraphQLContext, ParentType extends Resol
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  primaryPets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPrimaryPetsArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
-  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<UserPetsArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
   resolvedField?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
-}>;
-
-export type PetConnectionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PetConnection'] = ResolversParentTypes['PetConnection']> = ResolversObject<{
-  nodes?: Resolver<Array<Maybe<ResolversTypes['Pet']>>, ParentType, ContextType>;
-  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
@@ -306,40 +213,25 @@ export type UserConnectionResolvers<ContextType = GraphQLContext, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
-export type PetResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Pet'] = ResolversParentTypes['Pet']> = ResolversObject<{
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  longField?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  primaryOwner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  owners?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<PetOwnersArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
-}>;
-
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
-  pet?: Resolver<Maybe<ResolversTypes['Pet']>, ParentType, ContextType, RequireFields<QueryPetArgs, 'id'>>;
-  pets?: Resolver<ResolversTypes['PetConnection'], ParentType, ContextType, RequireFields<QueryPetsArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
 }>;
 
-export type CreatePersonResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreatePersonResponse'] = ResolversParentTypes['CreatePersonResponse']> = ResolversObject<{
+export type CreateUserResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreateUserResponse'] = ResolversParentTypes['CreateUserResponse']> = ResolversObject<{
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  createPerson?: Resolver<ResolversTypes['CreatePersonResponse'], ParentType, ContextType, RequireFields<MutationCreatePersonArgs, 'input'>>;
+  createUser?: Resolver<ResolversTypes['CreateUserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
 }>;
 
 export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   User?: UserResolvers<ContextType>;
-  PetConnection?: PetConnectionResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
-  Pet?: PetResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  CreatePersonResponse?: CreatePersonResponseResolvers<ContextType>;
+  CreateUserResponse?: CreateUserResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
 }>;
 
@@ -351,8 +243,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
 export type IResolvers<ContextType = GraphQLContext> = Resolvers<ContextType>;
 
 export type AutoResolvers = {
-  Pet: ResolverFn<ResolverTypeWrapper<Pet>, unknown, GraphQLContext, { id: string }>,
   User: ResolverFn<ResolverTypeWrapper<User>, unknown, GraphQLContext, { id: string }>,
 }
-type CreatePersonResolverResponse = Record<keyof Omit<CreatePersonResponse, '__typename'>, { id: string }>;
-export type CreatePersonResolver = Resolver<CreatePersonResolverResponse, unknown, GraphQLContext, RequireFields<MutationCreatePersonArgs, 'input'>>;
+type CreateUserResolverResponse = Record<keyof Omit<CreateUserResponse, '__typename'>, { id: string }>;
+export type CreateUserResolver = Resolver<CreateUserResolverResponse, unknown, GraphQLContext, RequireFields<MutationCreateUserArgs, 'input'>>;

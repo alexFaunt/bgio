@@ -26,3 +26,7 @@ https://www.me.uk/cards/makeadeck.cgi
 
 * poker
 https://github.com/goldfire/pokersolver
+
+
+TODO
+"react-hooks" eslint

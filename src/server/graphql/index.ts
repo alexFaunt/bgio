@@ -4,7 +4,7 @@ import { Model } from 'objection';
 import createSchema from 'server/graphql/schema';
 import { Context } from 'server/types';
 import createPool, { Connection, Pool } from 'server/db/pool';
-// import models from 'server/db/models';
+import models from 'server/db/models';
 
 type CreateApolloServerArgs = {
   connection: Connection;
@@ -20,13 +20,12 @@ const createApolloServer = async ({ connection, pool }: CreateApolloServerArgs) 
 
   const schema = await createSchema();
 
-  return new ApolloServer({
+  return new ApolloServer<ApolloContext>({
     schema,
     context: async ({ ctx: { state: { auth } } }: { ctx: Context }) => {
       // build up auth functions - invoked when needed so can be lazy - defaults to no modifier
       const authModifiers = {
         get authUser() {
-          console.log('authUser');
           return publicAuth;
         },
       };
@@ -34,6 +33,7 @@ const createApolloServer = async ({ connection, pool }: CreateApolloServerArgs) 
       return {
         auth,
         authModifiers,
+        models,
       };
     },
   });

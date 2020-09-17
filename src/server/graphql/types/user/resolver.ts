@@ -1,6 +1,3 @@
-const userResolver = {
-  resolvedField: () => 'hi', // Custom additional field
-  name: () => null, // Restricted privacy field
-};
+const userResolver = {};
 
 export default userResolver;

@@ -58,7 +58,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/client/*'],
+      files: ['src/client/*', 'src/client/**'],
       env: {
         browser: true,
       },

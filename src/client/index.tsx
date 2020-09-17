@@ -1,25 +1,41 @@
 import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
-import { Client } from 'boardgame.io/react';
-import { SocketIO } from 'boardgame.io/multiplayer';
 
-import TicTacToe from 'common/game';
-import Board from 'client/organisms/board';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { BrowserRouter, Switch } from 'react-router-dom';
+
 import config from 'client/config';
+import { StateProvider } from 'client/state';
+import { ProtectedRoute, LoginRoute } from 'client/utils/auth-routes';
 
-const Game = Client({
-  game: TicTacToe,
-  board: Board,
-  multiplayer: SocketIO({
-    server: config.SERVER_URL,
-    socketOpts: {
-      transports: ['websocket'],
-    },
-  }),
+import Games from 'client/pages/games';
+import Home from 'client/pages/home';
+import Game from 'client/pages/game';
+
+// TODO auth... lol
+const apolloClient = new ApolloClient({
+  uri: config.GRAPHQL_URL,
+  cache: new InMemoryCache(),
 });
 
 render((
   <StrictMode>
-    <Game playerID={window.location.search.split('').pop()} />
+    <BrowserRouter>
+      {/* <ThemeProvider> */}
+      {/* <ErrorBoundary> */}
+      {/* <GlobalStyles /> */}
+      <StateProvider>
+        <ApolloProvider client={apolloClient}>
+          <Switch>
+            <LoginRoute path="/" exact component={Home} />
+            <ProtectedRoute path="/games" exact component={Games} />
+            <ProtectedRoute path="/game/:id" exact component={Game} />
+            {/* Route - 404 */}
+          </Switch>
+        </ApolloProvider>
+      </StateProvider>
+      {/* </ErrorBoundary> */}
+      {/* </ThemeProvider> */}
+    </BrowserRouter>
   </StrictMode>
 ), document.getElementById('root'));

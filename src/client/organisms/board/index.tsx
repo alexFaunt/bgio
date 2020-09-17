@@ -106,7 +106,7 @@ const SlotHandCardImg = styled.img`
   margin-bottom: -80%;
 `;
 
-const SlotHandCards = ({ hand, settled }) => (
+const SlotHandCards = ({ hand, settled }: { hand: SlotHand, settled: boolean }) => (
   <>
     { settled && hand.coin && 'WINS' }
     { settled && !hand.coin && 'LOSES' }
