@@ -4,6 +4,7 @@ input CreateUserInput {
 
 type CreateUserResponse {
   user: User!
+  secret: String!
 }
 
 extend type Mutation {

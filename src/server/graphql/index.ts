@@ -1,24 +1,25 @@
 import { ApolloServer } from 'apollo-server-koa';
 import { Model } from 'objection';
+import Knex from 'knex';
 
 import createSchema from 'server/graphql/schema';
 import { Context } from 'server/types';
-import createPool, { Connection, Pool } from 'server/db/pool';
 import models from 'server/db/models';
+import createBgioProxy from 'server/graphql/bgio-proxy';
 
 type CreateApolloServerArgs = {
-  connection: Connection;
-  pool: Pool;
+  db: Knex;
+  url: string;
 };
 
 const publicAuth = () => {};
 
-const createApolloServer = async ({ connection, pool }: CreateApolloServerArgs) => {
-  const dbPool = createPool({ connection, pool });
-
-  Model.knex(dbPool);
+const createApolloServer = async ({ db, url }: CreateApolloServerArgs) => {
+  Model.knex(db);
 
   const schema = await createSchema();
+
+  const bgioProxy = createBgioProxy(url);
 
   return new ApolloServer<ApolloContext>({
     schema,
@@ -34,6 +35,7 @@ const createApolloServer = async ({ connection, pool }: CreateApolloServerArgs) 
         auth,
         authModifiers,
         models,
+        bgioProxy,
       };
     },
   });

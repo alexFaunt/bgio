@@ -5,6 +5,7 @@ export enum AuthActionTypes {
 
 type LoginPayload = {
   userId: string,
+  userSecret: string,
 };
 
 export const login = (payload: LoginPayload) => ({

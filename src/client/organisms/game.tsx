@@ -5,7 +5,6 @@ import { SocketIO } from 'boardgame.io/multiplayer';
 import SevenHandPoker from 'common/game';
 import Board from 'client/organisms/board';
 import config from 'client/config';
-import { useAppState } from 'client/state';
 
 const Game = Client({
   game: SevenHandPoker,
@@ -18,13 +17,13 @@ const Game = Client({
   }),
 });
 
-export default (props) => {
-  const userId = useAppState(({ auth }) => auth.userId);
+export default ({ gameId, credentials, playerId }) => {
+  console.log('RENDER GAME', gameId, credentials, playerId);
+
   return (
     <div>
-      <div>{ userId }</div>
-      <div>{ JSON.stringify(props) }</div>
-      <Game playerID={userId} />
+      <div>{ JSON.stringify({ gameId, credentials, playerId }) }</div>
+      <Game gameID={gameId} credentials={credentials} playerID={playerId} debug={config.BGIO_DEBUG} />
     </div>
   );
 };

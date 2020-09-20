@@ -8,7 +8,7 @@ const createSchema = async () => {
   const { schema: autoSchema, resolvers: autoResolvers } = await createAutomaticSchema();
 
   const { resolvers: mutationResolvers, typeDefs: mutationTypeDefs } = await createMutationDefinitions(autoResolvers);
-  const { resolvers: customResolvers, typeDefs: customTypeDefs } = await createCustomTypeDefs();
+  const { resolvers: customResolvers, typeDefs: customTypeDefs } = await createCustomTypeDefs(autoResolvers);
 
   // TODO prevent clashes
 

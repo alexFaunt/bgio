@@ -17,7 +17,6 @@ import {
   GraphQLFieldConfigArgumentMap,
   FieldNode,
   ObjectValueNode,
-  GraphQLString,
 } from 'graphql';
 import models from 'server/db/models';
 import { jsonSchemaToGraphQLFields } from 'server/graphql/objection/json-schema';
@@ -34,7 +33,7 @@ const defaultDirection = 'DESC';
 type ModelType = typeof Model;
 
 const expandConnections = (item: unknown): unknown => {
-  if (!item) {
+  if (item == null) {
     return null;
   }
 
@@ -59,8 +58,8 @@ const expandConnections = (item: unknown): unknown => {
 };
 
 const getNames = (model: ModelType) => {
-  const fieldName = camelCase(pluralize.singular(model.tableName));
-  const connectionFieldName = camelCase(model.tableName);
+  const fieldName = camelCase(pluralize.singular(model.tableName.toLowerCase()));
+  const connectionFieldName = camelCase(model.tableName.toLowerCase());
   const typeName = `${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`;
   const connectionTypeName = `${typeName}Connection`;
   const orderByTypeName = `${typeName}Order`;
@@ -91,18 +90,28 @@ const getRelationTypeName = ({ relation, modelClass }: { relation: RelationType,
   throw new Error(`relation type "${relation.constructor.name}" is not supported`);
 };
 
-const createListModifier = (selection: FieldNode) => (builder: Knex) => {
+const createListModifier = (selection: FieldNode, model: ModelType) => (builder: Knex) => {
   const argMap = (selection?.arguments || []).reduce((argAcc: { [key: string]: unknown }, { name, value }) => {
     if (name.value === 'conditions') {
-      // eslint-disable-next-line no-param-reassign
-      argAcc.conditions = (value as ObjectValueNode).fields.reduce((valueAcc, field) => {
-        // eslint-disable-next-line no-param-reassign
-        valueAcc[snakeCase(field.name.value)] = (field.value as unknown).value;
-        return valueAcc;
-      }, {} as { [key: string]: unknown });
+      // TODO this has become a right mess - needs moving down and just skipping here.
+      (value as ObjectValueNode).fields.forEach((field) => {
+        const namedModifier = model.modifiers && model.modifiers[field.name.value];
+        // console.log('WHERE STUDF', field.name.value, field.value.value, JSON.stringify(selection, null, 2))
+
+        // const val = field.value.kind === 'Variable' ? sel
+
+        if (namedModifier) {
+          // Should also use andwhere
+          namedModifier(builder, (field.value as unknown).value);
+        } else {
+          // And where to chain with auth modifiers
+          builder.andWhere(snakeCase(field.name.value), (field.value as unknown).value);
+        }
+      });
 
       return argAcc;
     }
+
     // eslint-disable-next-line no-param-reassign
     argAcc[name.value] = value.value;
 
@@ -116,11 +125,6 @@ const createListModifier = (selection: FieldNode) => (builder: Knex) => {
   builder.limit(parseInt(argMap.limit, 10) || defaultLimit);
   builder.offset(parseInt(argMap.offset, 10) || defaultOffset);
   builder.orderByRaw(`?? ${direction} NULLS LAST`, [order.toLowerCase()]);
-
-  // "andWhere" so it combos with auth modifiers
-  if (argMap.conditions) {
-    builder.andWhere(argMap.conditions);
-  }
 };
 
 const getEagerString = ({ node, modifiers, fieldName, model }) => {
@@ -156,7 +160,7 @@ const getEagerString = ({ node, modifiers, fieldName, model }) => {
     const modifierName = `f${modifiers.length}`;
 
     // Push a filter into to the modifiers array
-    modifiers.push({ [modifierName]: createListModifier(selection) });
+    modifiers.push({ [modifierName]: createListModifier(selection, model) });
 
     // If query includes nodes recurse to it
     const selectionNode = selection.selectionSet.selections.find(({ name }) => name.value === 'nodes');
@@ -178,6 +182,22 @@ const getEagerString = ({ node, modifiers, fieldName, model }) => {
   }
 
   return fieldName;
+};
+
+const resolveVarsMutation = (info) => {
+  const vars = info.variableValues;
+
+  // This is a massive hack in two ways - 1, using the modifier function to do free recursion,
+  // 2 - mutating the info object
+  JSON.stringify(info, (key, value) => {
+    if (value?.kind === 'Variable') {
+      if (vars[value?.name?.value]) {
+        // eslint-disable-next-line no-param-reassign
+        value.value = vars[value.name.value];
+      }
+    }
+    return value;
+  });
 };
 
 const createAutomaticSchema = () => {
@@ -267,7 +287,14 @@ const createAutomaticSchema = () => {
     // Singular instead of [{}, {}] which would be nicer, because needs to combo with auth filters, this is just easier.
     const conditionType = new GraphQLList(new GraphQLInputObjectType({
       name: conditionTypeName,
-      fields: columnFields, // TODO - may want to exclude fields from conditions as they should have DB indexes
+      fields: Object.entries(columnFields).reduce((acc, [key, value]) => {
+        // TODO - can convert the other objects to things to make other types work
+        if (['Int', 'String', 'Enum'].includes(value.type.toString())) {
+          acc[key] = value;
+        }
+        // TODO add modfiers from model.static model.modifiers - what type are they? who cares... just define in schema
+        return acc;
+      }, {}), // TODO - may want to exclude fields from conditions as they should have DB indexes
     }));
 
     const connectionArgs = {
@@ -319,15 +346,20 @@ const createAutomaticSchema = () => {
       return expandConnections(dbResponse);
     };
 
+
     const resolveFieldType = async (parent, args, context, info) => {
       // TODO validate args
       const queryBuilder = model.query().first();
+
+      resolveVarsMutation(info);
 
       queryBuilder.modifiers({ ...defaultAuthModifiers, ...context.authModifiers });
       queryBuilder.modify(`auth${typeName}`);
 
       const argEntries = args && Object.entries(args);
-      const parentEntries = parent && Object.entries(parent);
+      // TODO might not need this
+      const parentEntries = false; // parent && Object.entries({ id: parent.id });
+      console.log('argEntries', model.tableName, argEntries, parentEntries)
 
       const criteria = argEntries && argEntries.length ? argEntries : parentEntries;
       if (criteria && criteria.length) {
@@ -344,8 +376,10 @@ const createAutomaticSchema = () => {
     const resolveListFieldType = async (parent, args, context, info) => {
       const queryBuilder = model.query();
 
+      resolveVarsMutation(info);
+
       // Add list modifiers to top level query
-      queryBuilder.modify(createListModifier(info.fieldNodes[0]));
+      queryBuilder.modify(createListModifier(info.fieldNodes[0], model));
 
       // Add auth modifiers where needed
       queryBuilder.modifiers({ ...defaultAuthModifiers, ...context.authModifiers });

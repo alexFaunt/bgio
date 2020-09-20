@@ -41,8 +41,8 @@ const HandItem = ({ card, selected, onSelected, onUnselected }: HandItemProps) =
 
   return (
     card
-      ? <HandCardImg src={`static/cards/${card.id}.svg`} onClick={onClick} selected={selected} />
-      : <HandCardImg src="static/cards/BACK.svg" selected={selected} />
+      ? <HandCardImg src={`/static/cards/${card.id}.svg`} onClick={onClick} selected={selected} />
+      : <HandCardImg src="/static/cards/BACK.svg" selected={selected} />
   );
 };
 
@@ -110,7 +110,7 @@ const SlotHandCards = ({ hand, settled }: { hand: SlotHand, settled: boolean }) 
   <>
     { settled && hand.coin && 'WINS' }
     { settled && !hand.coin && 'LOSES' }
-    { hand.cards.map((card) => <SlotHandCardImg src={`static/cards/${card || 'BACK'}.svg`} />) }
+    { hand.cards.map((card) => <SlotHandCardImg src={`/static/cards/${card || 'BACK'}.svg`} />) }
   </>
 );
 
@@ -152,8 +152,8 @@ const ProposedHand = ({ hand }: { hand: Card[] }) => (
     {
       hand.map((card, index) => (
         card
-          ? <HandCardImg key={card.id} src={`static/cards/${card.id}.svg`} />
-          : <HandCardImg key={index} src="static/cards/BACK.svg" />
+          ? <HandCardImg key={card.id} src={`/static/cards/${card.id}.svg`} />
+          : <HandCardImg key={index} src="/static/cards/BACK.svg" />
       ))
     }
   </ProposedHandWrapper>
@@ -165,6 +165,7 @@ const Opponent = styled.div`
 
 // TODO fix ClientGameState type it's wrong/missing moves / not needed?
 const Board = ({ ctx, G, moves }: ClientGameState) => {
+  console.log('G.players', G)
   const me = G.players[G.myPlayerId];
   const opponent = G.players[G.opponentPlayerId];
   const myTurn = ctx.currentPlayer === G.myPlayerId;
@@ -172,6 +173,10 @@ const Board = ({ ctx, G, moves }: ClientGameState) => {
   const submitHand = useCallback(() => {
     moves.submitHand();
   }, [moves]);
+
+  if (!me) {
+    return null;
+  }
 
   if (ctx.gameover) {
     return <h1>Game over</h1>;

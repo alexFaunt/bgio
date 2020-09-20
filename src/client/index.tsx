@@ -1,21 +1,22 @@
 import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import { BrowserRouter, Switch } from 'react-router-dom';
 
 import config from 'client/config';
 import { StateProvider } from 'client/state';
 import { ProtectedRoute, LoginRoute } from 'client/utils/auth-routes';
+import createApolloClient from 'client/apollo-client';
 
 import Games from 'client/pages/games';
 import Home from 'client/pages/home';
 import Game from 'client/pages/game';
 
-// TODO auth... lol
-const apolloClient = new ApolloClient({
+const apolloClient = createApolloClient({
   uri: config.GRAPHQL_URL,
-  cache: new InMemoryCache(),
+  debug: true,
+  version: 'dev',
 });
 
 render((

@@ -14,11 +14,10 @@ HELLO THERE
   * ts-node-dev is garbage, so went back to babel-watch
   * it doesn't work well with babel 7 but ok for now
 
-
-TODO next up is auth middleware on koa + pull out info into both servers
-
-Also the models / migrations for users/pets need deleting obvs
-Also need a model for any BGIO stuff we want to expose
+* BGIO
+  * The credentials that come with player objects don't do anything which is super dumb, just passing em around for no reason. Even the generateAuth functions etc don't seeeeem to do anything? might have to write own transport
+  * ALSO if you just turn debug on you can flick between players anyway lol
+  * Proxying is ridiculous but whatever
 
 
 * Cards

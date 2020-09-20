@@ -1,0 +1,16 @@
+input CreateGameInput {
+  creatingUserId: String!
+}
+
+# TODO id scalars....
+type CreateGameResponse {
+  gameId: String!
+  playerId: String!
+  playerCredentials: String!
+}
+
+extend type Mutation {
+  createGame(
+    input: CreateGameInput!
+  ): CreateGameResponse!
+}

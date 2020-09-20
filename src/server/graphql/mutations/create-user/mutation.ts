@@ -10,9 +10,12 @@ const createUser: CreateUserResolver = async (root, inputPerson, context) => {
     .query()
     .insert({
       name,
-    });
+    })
+    .returning('*');
 
-  return { id: user.id, name: user.name };
+  console.log('USER', user);
+
+  return user;
 };
 
 export default ({ User }: AutoResolvers) => ({
@@ -20,6 +23,6 @@ export default ({ User }: AutoResolvers) => ({
     createUser,
   },
   CreateUserResponse: {
-    user: User,
+    user: (createUserResponse, args, ctx, info) => User({}, { id: createUserResponse.id }, ctx, info),
   },
 });

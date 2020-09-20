@@ -1,0 +1,19 @@
+input PlayerCondition {
+  userId: String
+}
+
+input GameConditions {
+  userId: String
+}
+
+enum GameStatusEnum {
+  COMPLETE
+  PENDING
+  PLAYING
+  UNKNOWN
+}
+
+type Game {
+  players: [Player!]!
+  status: GameStatusEnum!
+}

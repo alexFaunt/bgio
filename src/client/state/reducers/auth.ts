@@ -4,40 +4,49 @@ import { ActionCreator, Handler } from 'client/state/actions';
 
 export type AuthState = {
   userId: string | null;
+  userSecret: string | null;
 };
 
 type AuthHandler<Action extends ActionCreator> = Handler<AuthState, Action>;
 
 const emptyState: AuthState = {
   userId: null,
+  userSecret: null,
 };
 
 const USER_ID_LS_KEY = 'seven_hand_user_id_key';
+const USER_SECRET_LS_KEY = 'seven_hand_user_secret_key';
 
-const setState = ({ userId }: AuthState) => {
-  if (userId) {
-    global.localStorage.setItem(USER_ID_LS_KEY, userId);
-  }
+const persistState = ({ userId, userSecret }: AuthState) => {
+  localStorage.setItem(USER_ID_LS_KEY, userId);
+  localStorage.setItem(USER_SECRET_LS_KEY, userSecret);
 };
 
 const clearState: () => void = () => {
-  global.localStorage.removeItem(USER_ID_LS_KEY);
+  localStorage.removeItem(USER_ID_LS_KEY);
+  localStorage.removeItem(USER_SECRET_LS_KEY);
 };
 
-export const getPersistedState = (): AuthState => ({
-  userId: global.localStorage.getItem(USER_ID_LS_KEY),
-});
+const getPersistedState = (): AuthState => {
+  const userId = localStorage.getItem(USER_ID_LS_KEY);
+  const userSecret = localStorage.getItem(USER_SECRET_LS_KEY);
 
-const loginHandler: Handler<Login> = (state, payload): AuthState => {
-  const { userId } = payload;
-  const newState = {
-    userId,
-  };
-  setState(newState);
-  return newState;
+  if (!userId || !userSecret) {
+    clearState();
+    return emptyState;
+  }
+
+  return { userId, userSecret };
 };
 
-const logoutHandler: Handler<Logout> = (): AuthState => {
+export const getUserSecret = () => getPersistedState().userSecret;
+
+const loginHandler: AuthHandler<Login> = (state, payload): AuthState => {
+  persistState(payload);
+  return payload;
+};
+
+const logoutHandler: AuthHandler<Logout> = (): AuthState => {
   clearState();
   return emptyState;
 };

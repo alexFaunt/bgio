@@ -81,7 +81,6 @@ const GameDefinition: SevenHandPokerGame = {
 
   disableUndo: true,
 
-  // TODO - gonna need a custom one
   playerView: ({ setupAt, slots, players, deck }, ctx, myPlayerId): ClientGameInfo => ({
     setupAt,
     deck: deck.map(() => null),
@@ -104,7 +103,8 @@ const GameDefinition: SevenHandPokerGame = {
   setup: (ctx) => {
     const deck = Deck.shuffle(Deck.create());
 
-    const playerIds = ['0', '1']; // TODO - should come via "something" I think? needs secrets or something too...
+     // TODO - should come via "something" I think? needs secrets or something too...? wtf is it hard coded
+    const playerIds = ['0', '1'];
 
     const players = playerIds.reduce((acc, id) => {
       acc[id] = createPlayer({ id, cards: Deck.draw(deck, sevenHandPokerConfig.startingHandSize) });
@@ -155,7 +155,7 @@ const GameDefinition: SevenHandPokerGame = {
           },
           submitHand: (G, ctx) => {
             const currentPlayer = G.players[ctx.currentPlayer];
-
+            console.log('SUBMIT HAND', ctx.currentPlayer, currentPlayer);
             const { selectedCards, unselectedCards } = currentPlayer.hand.reduce((acc, handItem) => {
               if (handItem.selected) {
                 acc.selectedCards.push(handItem);
@@ -167,6 +167,7 @@ const GameDefinition: SevenHandPokerGame = {
             }, { selectedCards: [] as PlayerHandItem[], unselectedCards: [] as PlayerHandItem[] });
 
             if (!selectedCards.length) {
+              console.log('NO CARDS SELECTED')
               return INVALID_MOVE;
             }
 

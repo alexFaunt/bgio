@@ -18,12 +18,20 @@ const createBoardGameServer = ({ connection }: CreateBoardGameServerArgs) => {
   const server = Server({
     games: [SevenHandPoker],
     db,
-    // generateCredentials: (ctx) => {
+
+    // Seems to only be to do with the lobby and only for leaving the lobby? soemthing like that
+    // ABSOLUTE GARBAGE, can just change your player ID credentials do nothing.
+    // Need to write my own transport or something to intercept bad requests
+    // generateCredentials: async (ctx) => {
     //   // TODO this doesn't get called?! why?!
     //   console.log('generateCredentials', ctx.state);
+    //   return 'one two three';
     // },
-    // authenticateCredentials: (credentials, playerMetadata) => {
-    //   console.log('authenticateCredentials', credentials, playerMetadata);
+    // authenticateCredentials: (credentials, playerMetadata, ...args) => {
+    //   const { id: playerId, name: userId, credentials: requiredCredentials } = playerMetadata;
+    //   // Can use userId to check if it's legit (called on actions but not on reading...)
+    //   console.log('WHAT THE FUCK', playerId, userId, credentials, requiredCredentials, args);
+    //   return credentials === requiredCredentials;
     // },
   });
 

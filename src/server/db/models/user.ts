@@ -11,6 +11,7 @@ class UserModel extends BaseModel {
     properties: {
       id: { type: 'string' },
       name: { type: 'string', minLength: 3, maxLength: 255 },
+      // secret: { type: 'string', minLength: 10, maxLength: 32 }, - excluded so it doesn't go into the auto schema...
       createdAt: { type: 'string' }, // TODO date validator?
       updatedAt: { type: 'string' }, // TODO date validator?
     },

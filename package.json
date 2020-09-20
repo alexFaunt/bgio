@@ -1,6 +1,6 @@
 {
   "name": "bgio",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "TODO",
   "main": "TODO",
   "repository": "git@github.com:alexFaunt/bgio.git",
@@ -52,6 +52,7 @@
     "@types/semver-compare": "^1.0.1",
     "@types/styled-components": "^5.1.2",
     "@types/webpack": "^4.41.21",
+    "apollo-link-context": "^1.0.20",
     "apollo-server-koa": "^2.16.1",
     "babel-loader": "^8.1.0",
     "babel-plugin-module-resolver": "^4.0.0",

@@ -3,6 +3,7 @@ import Router from 'koa-router';
 import createApolloServer from 'server/graphql';
 import { Config } from 'server/config';
 import createBoardGameServer from 'server/board-game';
+import createPool from 'server/db/pool';
 
 // TODO, break these off to their own servers instead? e.g. Have game.sevenhand.com - graph.sevenhand.com
 
@@ -26,31 +27,44 @@ const createServer = async (config: Config) => {
     user: config.POSTGRES_USER,
     password: config.POSTGRES_PASSWORD,
   };
+  const pool = {
+    min: config.KNEX_POOL_MIN,
+    max: config.KNEX_POOL_MAX,
+  };
+  const apolloDbPool = createPool({ connection, pool });
+  const authStateDbPool = createPool({ connection, pool });
 
   // This is the koa server - it doesn't allow us to export as middleware
   const boardGameServer = createBoardGameServer({ connection });
 
   // Middleware wrapped around all others
-  boardGameServer.app.use((ctx, next) => {
-    // TODO get auth from header
-    ctx.state = ctx.state || {};
-    ctx.state.auth = {
-      user: {
-        id: 1,
-      },
-    };
+
+  boardGameServer.app.use(async (ctx, next) => {
+    const userSecret = ctx.headers['x-shp-user-secret'];
+
+    if (userSecret) {
+      // TODO hoist models?
+      const res = await authStateDbPool.from('users').select('id').where({ secret: userSecret }).first();
+      // error handle? hahaha
+      ctx.state.auth = {
+        user: {
+          id: res?.id,
+          secret: userSecret,
+        },
+      };
+    } else {
+      ctx.state.auth = {};
+    }
 
     return next();
   });
 
   // Apollo server for other content on /graphql
   const apolloServer = await createApolloServer({
-    connection,
-    pool: {
-      min: config.KNEX_POOL_MIN,
-      max: config.KNEX_POOL_MAX,
-    },
+    db: apolloDbPool,
+    url: `http://0.0.0.0:${config.SERVER_PORT}`,
   });
+
   boardGameServer.app.use(
     apolloServer.getMiddleware({ path: '/graphql', cors: false }),
   );

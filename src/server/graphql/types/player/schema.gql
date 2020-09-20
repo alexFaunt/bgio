@@ -1,0 +1,6 @@
+type Player {
+  id: String!
+  open: Boolean!
+  user: User
+  credentials: String
+}

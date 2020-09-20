@@ -29,6 +29,7 @@ const CREATE_USER = gql`
         id
         name
       }
+      secret
     }
   }
 `;
@@ -45,13 +46,13 @@ const Login = () => {
       initialValues={initialValues}
       validate={validate}
       onSubmit={async (values) => {
-        console.log('VALUES', values);
-
-        const response = await createUser({ variables: values });
-        console.log('RESPONSE', response);
+        const { data } = await createUser({ variables: values });
         // TODO handle error
 
-        dispatch(login({ userId: response.data.createUser.user.id }));
+        dispatch(login({
+          userId: data.createUser.user.id,
+          userSecret: data.createUser.secret,
+        }));
       }}
     >
       {({

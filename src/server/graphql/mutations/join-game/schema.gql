@@ -1,0 +1,16 @@
+input JoinGameInput {
+  gameId: String!
+  userId: String!
+  playerId: String!
+}
+
+# TODO id scalars....
+type JoinGameResponse {
+  playerCredentials: String!
+}
+
+extend type Mutation {
+  joinGame(
+    input: JoinGameInput!
+  ): JoinGameResponse!
+}
