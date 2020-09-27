@@ -4,6 +4,10 @@
   "description": "TODO",
   "main": "TODO",
   "repository": "git@github.com:alexFaunt/bgio.git",
+  "engines": {
+    "yarn": "1.x",
+    "node": "12"
+  },
   "scripts": {
     "start": "yarn migrate && node ./build/server/server",
     "start:dev": "concurrently \"yarn start:client:dev\" \"docker-compose up\" \"WATCH=true yarn generate:types\"",
