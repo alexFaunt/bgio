@@ -108,7 +108,7 @@ export default {
   output: {
     path: path.resolve(__dirname, 'build/client/public'),
     filename: '[name]/[hash].js',
-    publicPath: '/static',
+    publicPath: NODE_ENV === 'production' ? '/static' : '/',
   },
 };
 

@@ -65,9 +65,9 @@ type DestroyIdArgs = {
 
 export const destroyIdFactory = (knex: Knex) => async ({ tableName, columnName = 'id' }: DestroyIdArgs) => {
   await knex.raw(`
-    DROP FUNCTION create_${tableName}_${columnName}(bigint);
+    DROP FUNCTION IF EXISTS create_${tableName}_${columnName}(bigint);
 
-    DROP SEQUENCE ${getSequenceName({ tableName, columnName })};
+    DROP SEQUENCE IF EXISTS ${getSequenceName({ tableName, columnName })};
   `);
 };
 

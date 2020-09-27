@@ -15,9 +15,7 @@ export const { up, down } = migrator(__filename, {
     await knex.raw('ALTER TABLE "Games" ADD COLUMN updated_at timestamptz GENERATED ALWAYS AS ("updatedAt") STORED');
   },
   rollback: async ({ knex }) => {
-    await knex.schema.alterTable('Games', (table) => {
-      table.dropColumn('created_at');
-      table.dropColumn('updated_at');
-    });
+    await knex.raw('ALTER TABLE "Games" DROP COLUMN IF EXISTS updated_at');
+    await knex.raw('ALTER TABLE "Games" DROP COLUMN IF EXISTS created_at');
   },
 });
