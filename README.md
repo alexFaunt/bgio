@@ -1,6 +1,17 @@
 
 HELLO THERE
 
+* Barely works
+TODO:
+* Fix route redirection on login
+* Make cards actually readable and not shit.
+* Static asset caching and bundle opt
+* DNS hostname
+* maybe re-host it on something not shit to do no downtime deploys
+* Block requests i don't want you to do
+* See if we can stop cheating by reading hands / debug
+* AUTH - both shit and good
+
 
 * Objection GraphQL
   * Have taken a copy because they don't maintain it and i wanted some updates and CBA with a fork for 4 files
