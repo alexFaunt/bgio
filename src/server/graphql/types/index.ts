@@ -14,9 +14,9 @@ const getTypeDefinitions = async (autoResolvers: AutoResolvers) => {
 
   const dir = await readdir(__dirname);
 
-  const resolvers = dir.filter((fileName) => fileName !== 'index.ts').reduce((acc, fileName) => {
+  const resolvers = dir.filter((fileName) => !fileName.startsWith('index')).reduce((acc, fileName) => {
     // eslint-disable-next-line global-require, import/no-dynamic-require, @typescript-eslint/no-var-requires
-    const createResolver = require(`./${fileName}/resolver.ts`).default;
+    const createResolver = require(`./${fileName}/resolver`).default;
     const resolver = typeof createResolver === 'function' ? createResolver(autoResolvers) : createResolver;
 
     const camelCaseFileName = camelCase(fileName);

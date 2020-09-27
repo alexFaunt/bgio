@@ -97,7 +97,7 @@ export default {
     new CopyPlugin({
       patterns: [{
         from: path.resolve(__dirname, 'src/public/'),
-        to: path.resolve(__dirname, 'build/public/'),
+        to: path.resolve(__dirname, 'build/client/public/'),
       }],
     }),
   ],
@@ -110,7 +110,8 @@ export default {
     ],
   },
   output: {
-    filename: '[name]/[fullhash].js',
+    path: path.resolve(__dirname, 'build/client/public'),
+    filename: '[name]/[hash].js',
     publicPath: '/',
   },
 };

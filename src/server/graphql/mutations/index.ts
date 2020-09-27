@@ -10,12 +10,14 @@ const getMutationDefinitions = async (autoResolvers: AutoResolvers) => {
 
   const dir = await readdir(__dirname);
 
-  const resolvers = dir.filter((fileName) => fileName !== 'index.ts').reduce((acc, fileName) => {
+  const resolvers = dir.filter((fileName) => !fileName.startsWith('index.')).reduce((acc, fileName) => {
     // eslint-disable-next-line global-require, import/no-dynamic-require, @typescript-eslint/no-var-requires
-    const { Mutation, ...rest } = require(`./${fileName}/mutation.ts`).default(autoResolvers);
+    const { Mutation, ...rest } = require(`./${fileName}/mutation`).default(autoResolvers);
     acc.Mutation = Object.assign(acc.Mutation, Mutation);
     return Object.assign(acc, rest);
   }, { Mutation: {} });
+
+  console.log('RESOLVERS FOUND', Object.keys(resolvers));
 
   return {
     typeDefs: [
