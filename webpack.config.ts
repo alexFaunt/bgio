@@ -8,10 +8,13 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import config from './src/client/config';
 
-const env = dotenv.config();
+const env = dotenv.config({
+  path: process.env.NODE_ENV === 'production' ? `prod.env` : '.env',
+});
+
 dotenvExpand(env);
 
-const { NODE_ENV, DEV_SERVER_PORT, PORT, API_PATH, VERSION } = env.parsed as { [key: string]: string };
+const { NODE_ENV, DEV_SERVER_PORT, PORT, VERSION } = env.parsed as { [key: string]: string };
 
 // const { CIRCLE_SHA1, CIRCLE_TAG } = env;
 // const version = CIRCLE_TAG || (CIRCLE_SHA1 && CIRCLE_SHA1.substr(0, 7)) || 'dev';
@@ -34,7 +37,7 @@ export default {
     https: NODE_ENV !== 'development',
     proxy: {
       [`/graphql`]: {
-        target: `http://localhost:2001`,
+        target: `http://localhost:${PORT}`,
         changeOrigin: true,
       },
     },

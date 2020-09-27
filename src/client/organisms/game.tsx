@@ -10,7 +10,9 @@ const Game = Client({
   game: SevenHandPoker,
   board: Board,
   multiplayer: SocketIO({
-    server: config.SERVER_URL,
+    // Locally i set to IP:2001 in production we just undefined and default takes over
+    // Would be nice to be the same but :shrug:
+    server: config.SERVER_URL || undefined,
     socketOpts: {
       transports: ['websocket'],
     },
