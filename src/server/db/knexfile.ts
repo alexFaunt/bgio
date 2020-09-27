@@ -1,11 +1,9 @@
 import path from 'path';
-import getConfig from 'server/config';
-
-const config = getConfig();
 
 const migrationConfig = {
   client: 'postgresql',
-  connection: config.DATABASE_URL,
+  // eslint-disable-next-line no-process-env
+  connection: process.env.DATABASE_URL,
   migrations: {
     tableName: 'knex_migrations',
     directory: path.join(__dirname, 'migrations'),
