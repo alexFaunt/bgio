@@ -11,49 +11,24 @@ const schema = {
     format: Number,
     default: 10,
   },
-  POSTGRES_DB: {
-    doc: 'Database name',
-    format: String,
-    default: null,
-  },
-  POSTGRES_HOST: {
-    doc: 'Database host',
-    format: String,
-    default: null,
-  },
-  POSTGRES_PASSWORD: {
-    doc: 'Database password',
-    format: String,
-    default: null,
-    sensitive: true,
-  },
-  POSTGRES_PORT: {
-    doc: 'Database port',
-    format: 'port',
-    default: null,
-  },
-  POSTGRES_USER: {
-    doc: 'Database user',
-    format: String,
-    default: null,
-    sensitive: true,
-  },
-  SERVER_PORT: {
+  PORT: {
     doc: 'Server port',
     format: 'port',
     default: null,
   },
+  DATABASE_URL: {
+    doc: 'DB URL supplied by heroku instead of postgres strings',
+    format: String,
+    default: null,
+    sensitive: true,
+  },
 };
 
 export type Config = {
-  SERVER_PORT: number,
+  PORT: number,
   KNEX_POOL_MIN: number,
   KNEX_POOL_MAX: number,
-  POSTGRES_DB: string,
-  POSTGRES_HOST: string,
-  POSTGRES_PASSWORD: string,
-  POSTGRES_PORT: number,
-  POSTGRES_USER: string,
+  DATABASE_URL: string,
 };
 
 const entries = Object.keys(schema).reduce((acc, key) => ({

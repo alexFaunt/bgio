@@ -11,7 +11,7 @@ import config from './src/client/config';
 const env = dotenv.config();
 dotenvExpand(env);
 
-const { NODE_ENV, DEV_SERVER_PORT, SERVER_PORT, API_PATH, VERSION } = env.parsed as { [key: string]: string };
+const { NODE_ENV, DEV_SERVER_PORT, PORT, API_PATH, VERSION } = env.parsed as { [key: string]: string };
 
 // const { CIRCLE_SHA1, CIRCLE_TAG } = env;
 // const version = CIRCLE_TAG || (CIRCLE_SHA1 && CIRCLE_SHA1.substr(0, 7)) || 'dev';
@@ -33,12 +33,8 @@ export default {
     // hot: true,
     https: NODE_ENV !== 'development',
     proxy: {
-      [`${API_PATH}`]: {
-        target: `http://localhost:${SERVER_PORT}`,
-        changeOrigin: true,
-      },
       [`/graphql`]: {
-        target: `http://localhost:${SERVER_PORT}`,
+        target: `http://localhost:2001`,
         changeOrigin: true,
       },
     },
@@ -112,7 +108,7 @@ export default {
   output: {
     path: path.resolve(__dirname, 'build/client/public'),
     filename: '[name]/[hash].js',
-    publicPath: '/',
+    publicPath: '/static',
   },
 };
 

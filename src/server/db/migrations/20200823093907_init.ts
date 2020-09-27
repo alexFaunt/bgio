@@ -1,7 +1,6 @@
 import migrator from 'server/db/migrator';
 
 export const { up, down } = migrator(__filename, {
-  requires: '0.0.2',
   migration: async ({ knex }) => {
     await knex.raw(`
       CREATE OR REPLACE FUNCTION stringify_bigint(input bigint) RETURNS text LANGUAGE plpgsql AS $$

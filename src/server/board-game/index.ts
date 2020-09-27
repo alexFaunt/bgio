@@ -2,18 +2,13 @@ import { Server } from 'boardgame.io/server';
 
 import { PostgresStore } from 'bgio-postgres';
 import SevenHandPoker from 'common/game';
-import { Connection } from 'server/db/pool';
 
 type CreateBoardGameServerArgs = {
-  connection: Connection;
+  connection: string;
 };
 
 const createBoardGameServer = ({ connection }: CreateBoardGameServerArgs) => {
-  const { user: username, ...storeConnection } = connection;
-  const db = new PostgresStore({
-    username,
-    ...storeConnection,
-  });
+  const db = new PostgresStore(connection);
 
   const server = Server({
     games: [SevenHandPoker],

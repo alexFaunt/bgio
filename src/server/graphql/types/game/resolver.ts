@@ -3,7 +3,7 @@ const players = (game) => Object.values(game.players).map((player) => {
 
   const userId = player.name;
   // console.log('ONE', index, userId, game.players);
-
+console.log('USER ID ', player);
   return {
     id: player.id,
     open: !userId,

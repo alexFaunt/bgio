@@ -22,10 +22,10 @@ const runServer = async () => {
 
     // Run the server
     server.run(
-      config.SERVER_PORT,
+      config.PORT,
       async () => {
         // TODO logger.
-        console.log(`Doing server things ${config.SERVER_PORT}`);
+        console.log(`Doing server things ${config.PORT}`);
         // console.log('PET2', await PetModel.query().insert({ name: 'jennifer', longField: 'Lawrence' }))
 
         // const a = await fetch('http://0.0.0.0:2001/games/seven-hand-poker/create', {

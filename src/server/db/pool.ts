@@ -1,20 +1,12 @@
 import knex from 'knex';
 
-export type Connection = {
-  host: string,
-  port: number,
-  database: string,
-  user: string,
-  password: string,
-};
-
 export type Pool = {
   min: number,
   max: number,
 };
 
 type PoolArgs = {
-  connection: Connection,
+  connection: string,
   pool: Pool,
   debug?: boolean,
 };

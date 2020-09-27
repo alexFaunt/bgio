@@ -17,13 +17,8 @@ const Game = Client({
   }),
 });
 
-export default ({ gameId, credentials, playerId }) => {
-  console.log('RENDER GAME', gameId, credentials, playerId);
-
-  return (
-    <div>
-      <div>{ JSON.stringify({ gameId, credentials, playerId }) }</div>
-      <Game gameID={gameId} credentials={credentials} playerID={playerId} debug={config.BGIO_DEBUG} />
-    </div>
-  );
-};
+export default ({ gameId, credentials, playerId }) => (
+  <div>
+    <Game gameID={gameId} credentials={credentials} playerID={playerId} debug={config.BGIO_DEBUG} />
+  </div>
+);

@@ -14,12 +14,21 @@ services:
     env_file:
       - .env
     environment:
+      # Server vars
+      - PORT=2001
+      - NODE_ENV=development
+      - VERSION=dev
+      - DATABASE_URL=postgresql://admin-user:admin-pass@postgres-db:5432/bgio
+      # Only used for wait-for postgres
+      - POSTGRES_DB=bgio
+      - POSTGRES_PASSWORD=admin-pass
+      - POSTGRES_USER=admin-user
       - POSTGRES_HOST=postgres-db
-      - POSTGRES_PORT=5432
 
   postgres-db:
     image: postgres:13-alpine
     ports:
+      # Exposed for debugging
       - "2002:5432"
     expose:
       - "5432"

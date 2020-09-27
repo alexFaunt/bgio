@@ -5,22 +5,19 @@ import { Config } from 'server/config';
 import createBoardGameServer from 'server/board-game';
 import createPool from 'server/db/pool';
 import serve from 'koa-static';
+import mount from 'koa-mount';
 import path from 'path';
 import fs from 'fs';
+import { promisify } from 'util';
 
 // TODO, break these off to their own servers instead? e.g. Have game.sevenhand.com - graph.sevenhand.com
 
 const publicPath = path.resolve(__dirname, '../../client/public');
-const indexFile = fs.readFileSync(path.join(publicPath, 'index.html'), { encoding: 'utf8' });
+let indexFile;
+const readFile = promisify(fs.readFile);
 
 const createServer = async (config: Config) => {
-  const connection = {
-    host: config.POSTGRES_HOST,
-    port: config.POSTGRES_PORT,
-    database: config.POSTGRES_DB,
-    user: config.POSTGRES_USER,
-    password: config.POSTGRES_PASSWORD,
-  };
+  const connection = config.DATABASE_URL;
   const pool = {
     min: config.KNEX_POOL_MIN,
     max: config.KNEX_POOL_MAX,
@@ -34,7 +31,7 @@ const createServer = async (config: Config) => {
   // Apollo server for other content on /graphql
   const apolloServer = await createApolloServer({
     db: apolloDbPool,
-    url: `http://0.0.0.0:${config.SERVER_PORT}`,
+    url: `http://0.0.0.0:${config.PORT}`,
   });
 
   // Add any custom routes TODO - do these come first? e.g. can wrap the others?
@@ -44,7 +41,12 @@ const createServer = async (config: Config) => {
   });
 
   // Serve the index file on any route (this needs to be after all other routes...)
-  router.get('(.*)', (ctx) => {
+  // This is only used in prod - webpack-dev-server is used locally
+  router.get('(.*)', async (ctx) => {
+    if (!indexFile) {
+      indexFile = await readFile(path.join(publicPath, 'index.html'), { encoding: 'utf8' });
+    }
+
     ctx.body = indexFile;
   });
 
@@ -81,7 +83,7 @@ const createServer = async (config: Config) => {
   );
 
   // Host build assets
-  boardGameServer.app.use(serve(publicPath));
+  boardGameServer.app.use(mount('/static', serve(publicPath)));
 
   // use routes (including * which goes to index)
   boardGameServer.app.use(router.routes()).use(router.allowedMethods());

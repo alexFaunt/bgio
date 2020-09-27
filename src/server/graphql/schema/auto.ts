@@ -359,7 +359,6 @@ const createAutomaticSchema = () => {
       const argEntries = args && Object.entries(args);
       // TODO might not need this
       const parentEntries = false; // parent && Object.entries({ id: parent.id });
-      console.log('argEntries', model.tableName, argEntries, parentEntries)
 
       const criteria = argEntries && argEntries.length ? argEntries : parentEntries;
       if (criteria && criteria.length) {

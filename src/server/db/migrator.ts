@@ -18,7 +18,7 @@ export type Migration = ({ knex, idCreator }: { knex: Knex, idCreator: IdCreator
 export type Rollback = ({ knex, destroyId }: { knex: Knex, destroyId: DestroyId }) => void;
 
 export type MigrationDefinition = {
-  requires: string,
+  requires?: string,
   migration: Migration,
   rollback: Rollback,
 };
@@ -34,7 +34,7 @@ const migrator = (pathname: string, { requires, migration, rollback }: Migration
 
   return {
     up: async (knex: Knex) => {
-      if (semver(version, requires) !== 0 && process.env.ALLOW_UNSAFE_DEPLOYMENTS !== 'true') {
+      if (requires && semver(version, requires) !== 0) {
         throw new Error(`Unsatisfied migration requirement. Required version: ${requires}, running: ${version}`);
       }
 
@@ -46,10 +46,6 @@ const migrator = (pathname: string, { requires, migration, rollback }: Migration
       });
     },
     down: async (knex: Knex) => {
-      if (process.env.ALLOW_DATABASE_ROLLBACKS !== 'true') {
-        throw new Error('Database rollbacks are not allowed.');
-      }
-
       console.info(`[migrator] Running rollback for "${name}"`);
 
       return rollback({

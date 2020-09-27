@@ -5,7 +5,13 @@ import { JoinGameResolver } from 'server/graphql/definitions';
 const joinGame: JoinGameResolver = async (root, args, context) => {
   const { userId, gameId, playerId } = args.input;
 
-  // Check it's a real user / auth (lol)
+  const user = await context.models.user.query().findById(args.input.userId);
+
+  if (!user) {
+    throw new Error('Not a real user');
+  }
+
+  // TODO auth (lol)
 
   const { playerCredentials } = await context.bgioProxy.joinGame({ gameId, userId, playerId });
 
