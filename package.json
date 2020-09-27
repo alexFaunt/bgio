@@ -9,12 +9,12 @@
     "node": "12"
   },
   "scripts": {
-    "start": "yarn migrate && node ./build/server/server",
+    "start": "node ./build/server/server",
     "start:dev": "concurrently \"yarn start:client:dev\" \"docker-compose up\" \"WATCH=true yarn generate:types\"",
     "start:client:dev": "webpack-dev-server",
     "start:server:dev": "babel-watch --extensions '.js,.json,.ts,.gql' --watch=src/server/graphql/mutations --watch=src/server/graphql/types ./src/server/index.ts",
     "start:build:debug": "PORT=2001 DATABASE_URL=postgresql://admin-user:admin-pass@localhost:2002/bgio node ./build/server/server",
-    "heroku-postbuild": "yarn build",
+    "heroku-postbuild": "yarn build && yarn migrate",
     "build": "yarn clean:build && yarn build:client && yarn build:server",
     "build:client": "webpack",
     "build:server": "babel src -d build/server --ignore src/client/ --ignore *.test.ts --extensions '.js,.json,.ts' --source-maps --verbose",
@@ -26,10 +26,8 @@
     "tsc:client": "tsc --noImplicitAny --project tsconfig.client.json",
     "tsc:server": "tsc --noImplicitAny --project tsconfig.server.json",
     "test": "jest",
-    "migrate": "knex --knexfile ./build/server/server/db/knexfile.js migrate:latest;",
-    "rollback": "knex --knexfile ./build/server/server/db/knexfile.js migrate:rollback;",
-    "migrate:dev": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:latest;",
-    "rollback:dev": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:rollback;",
+    "migrate": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:latest;",
+    "rollback": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile ./src/server/db/knexfile.ts migrate:rollback;",
     "generate:migration": "hygen migration create",
     "generate:types": "babel-node --extensions '.js,.json,.ts' ./scripts/generate-types.ts"
   },
