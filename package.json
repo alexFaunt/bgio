@@ -10,7 +10,7 @@
     "start:client:dev": "webpack-dev-server",
     "start:server:dev": "babel-watch --extensions '.js,.json,.ts,.gql' --watch=src/server/graphql/mutations --watch=src/server/graphql/types ./src/server/index.ts",
     "start:build:debug": "POSTGRES_HOST=localhost POSTGRES_PORT=2002 node -r dotenv/config ./build/server/server",
-    "heroku-postbuild": "yarn build:client && build:server",
+    "heroku-postbuild": "yarn clean:build && yarn build:client && yarn build:server",
     "build:client": "webpack",
     "build:server": "babel src -d build/server --ignore src/client/ --ignore *.test.ts --extensions '.js,.json,.ts' --source-maps --verbose",
     "clean:build:server": "rm -rf build/server",
