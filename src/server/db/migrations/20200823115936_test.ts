@@ -23,8 +23,8 @@ export const { up, down } = migrator(__filename, {
     });
   },
   rollback: async ({ knex, destroyId }) => {
-    destroyId({ tableName: 'users' });
-    destroyId({ tableName: 'users', columnName: 'secret' });
     await knex.schema.dropTable('users');
+    await destroyId({ tableName: 'users' });
+    await destroyId({ tableName: 'users', columnName: 'secret' });
   },
 });

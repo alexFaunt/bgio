@@ -6,7 +6,7 @@
   "repository": "git@github.com:alexFaunt/bgio.git",
   "engines": {
     "yarn": "1.x",
-    "node": "12"
+    "node": "14"
   },
   "scripts": {
     "start": "yarn migrate && node ./build/server",
@@ -18,7 +18,6 @@
     "build": "yarn clean:build && yarn build:client && yarn build:server",
     "build:client": "webpack",
     "build:server": "babel src -d build --ignore src/client/ --ignore *.test.ts --extensions '.js,.json,.ts' --source-maps --verbose",
-    "build:migrations": "babel src/server/db/migrations -d build/server/db/migrations --source-type unambiguous --extensions '.js,.json,.ts' --verbose",
     "clean:build:server": "rm -rf build/server",
     "clean:build": "rm -rf build && mkdir build",
     "qa": "yarn tsc && yarn lint && yarn test",
