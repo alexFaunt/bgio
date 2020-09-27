@@ -3,7 +3,6 @@
 import path from 'path';
 import semver from 'semver-compare';
 import Knex from 'knex';
-import fs from 'fs';
 
 import {
   idCreatorFactory,
@@ -12,12 +11,8 @@ import {
   DestroyId,
 } from 'server/db/functions/create-id';
 
-let package;
-try {
-  package = JSON.parse(fs.readFileSync('../../../package.json'));
-} catch (error) {
-  package = JSON.parse(fs.readFileSync('../../package.json'));
-}
+// eslint-disable-next-line no-restricted-imports
+import npmPackage from '../../../package.json';
 
 export type Migration = ({ knex, idCreator }: { knex: Knex, idCreator: IdCreator }) => void;
 export type Rollback = ({ knex, destroyId }: { knex: Knex, destroyId: DestroyId }) => void;
@@ -35,7 +30,7 @@ const migrator = (pathname: string, { requires, migration, rollback }: Migration
     throw new Error('Unable to retrieve a name from the migration filename');
   }
 
-  const { version } = package;
+  const { version } = npmPackage;
 
   return {
     up: async (knex: Knex) => {

@@ -12,7 +12,7 @@ import { promisify } from 'util';
 
 // TODO, break these off to their own servers instead? e.g. Have game.sevenhand.com - graph.sevenhand.com
 
-const publicPath = path.resolve(__dirname, '../../client/public');
+const publicPath = path.resolve(__dirname, '../client/public');
 let indexFile;
 const readFile = promisify(fs.readFile);
 
