@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { ClientGameState, PlayerHandItem, SlotHand, Card } from 'common/game/types';
+import { ClientGameState, PlayerHandItem, SlotHand, Card as CardType } from 'common/game/types';
 
 type HandItemProps = PlayerHandItem & {
   onSelected: ({ cardId: string }) => void,
@@ -14,13 +14,31 @@ type HandItemProps = PlayerHandItem & {
 // TODO theme
 // TODO grid
 
-const HandCardImg = styled.img`
-  display: inline-block;
-  height: 90%;
-  /* TODO - can make this variable */
-  margin-right: -10vh;
-  transform: translateY(${({ selected }) => (selected ? '0%' : '10%')});
+const CardWrapper = styled.div<{ selected: boolean }>`
+  width: 100%;
+  position: relative;
+  transform: translateY(${({ selected }) => (selected ? '-10%' : '0%')});
+
+  &::before {
+    content: '';
+    display: block;
+    padding-bottom: 140%;
+  }
 `;
+
+const CardImg = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const Card = ({ id, selected, onClick, className }) => (
+  <CardWrapper className={className} onClick={onClick} selected={selected}>
+    <CardImg src={`/static/cards/${id || 'BACK'}.svg`} />
+  </CardWrapper>
+);
 
 // TODO make it a button not an image
 
@@ -41,8 +59,8 @@ const HandItem = ({ card, selected, onSelected, onUnselected }: HandItemProps) =
 
   return (
     card
-      ? <HandCardImg src={`/static/cards/${card.id}.svg`} onClick={onClick} selected={selected} />
-      : <HandCardImg src="/static/cards/BACK.svg" selected={selected} />
+      ? <Card id={card.id} onClick={onClick} selected={selected} />
+      : <Card selected={selected} />
   );
 };
 
@@ -50,9 +68,19 @@ const HandWrapper = styled.div`
   height: 20vh;
   position: relative;
   white-space: nowrap;
-  overflow-x: scroll;
-  overflow-y: hidden;
+  overflow: hidden;
   border: 1px solid ${({ myTurn }) => (myTurn ? 'red' : 'transparent')};
+  display: flex;
+  flex-direction: row;
+  padding-top: 2vh;
+
+  ${CardWrapper} {
+    width: 200px;
+
+    &:not(:first-child) {
+      margin-left: -150px;
+    }
+  }
 `;
 
 // TODO does `hand` change, or get mutated?
@@ -67,9 +95,9 @@ type HandProps = {
 const Hand = ({ myTurn, hand, onCardSelected, onCardUnselected }: HandProps) => (
   <HandWrapper myTurn={myTurn}>
     {
-      hand.map(({ uid, card, selected }) => (
+      hand.map(({ card, selected }, i) => (
         <HandItem
-          key={uid}
+          key={i}
           card={card}
           selected={selected}
           onSelected={onCardSelected}
@@ -88,45 +116,78 @@ type SlotProps = {
   onSlotSelected: ({ slotId: string }) => void,
 };
 
-const SlotCards = styled.div`
+const SlotWrapper = styled.div`
+  margin: 4px;
+  width: calc(100% / 7);
+`;
+
+const SlotHandWrapper = styled.div`
+  position: relative;
+
+  ${CardWrapper} {
+    display: inline-block;
+    width: 50%;
+    &:not(:first-child) {
+      margin-left: -38%;
+    }
+  }
+`;
+
+const SlotCards = styled.div<{ zoomed: boolean }>`
   display: flex;
   flex-direction: column;
   height: 10vh;
   border: 1px solid red;
   border-radius: 10px;
-`;
+  margin-bottom: 20px;
+  overflow: hidden;
+  ${({ zoomed }) => (zoomed ? `
+    position: fixed;
+    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(100, 100, 100, 0.5);
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-const SlotWrapper = styled.div`
-  margin: 4px;
-`;
-
-const SlotHandCardImg = styled.img`
-  display: inline-block;
-  height: 40%;
-  margin-bottom: -80%;
+    ${SlotHandWrapper} {
+      width: 600px;
+    }
+  ` : '')}
 `;
 
 const SlotHandCards = ({ hand, settled }: { hand: SlotHand, settled: boolean }) => (
   <>
     { settled && hand.coin && 'WINS' }
     { settled && !hand.coin && 'LOSES' }
-    { hand.cards.map((card) => <SlotHandCardImg src={`/static/cards/${card || 'BACK'}.svg`} />) }
+    <SlotHandWrapper>
+      { hand.cards.map((card, i) => <Card key={i} id={card || 'BACK'} />) }
+    </SlotHandWrapper>
   </>
 );
 
 // TODO outcomes/settled
 const Slot = ({ id, myHand, opponentsHand, settled, onSlotSelected }: SlotProps) => {
-  const onClick = useCallback(() => {
+  const selectSlot = useCallback(() => {
     onSlotSelected({ slotId: id });
   }, [onSlotSelected, id]);
 
+  const [zoomMySlot, setZoomMySlot] = useState(false);
+  const [zoomOpponentSlot, setZoomOpponentSlot] = useState(false);
+
+  const viewOpponentSlot = () => setZoomOpponentSlot(!zoomOpponentSlot);
+  const viewMySlot = () => setZoomMySlot(!zoomMySlot);
+console.log('MY HAND', myHand);
   return (
     <SlotWrapper>
-      <SlotCards onClick={onClick}>
+      <SlotCards onClick={settled ? viewOpponentSlot : selectSlot} zoomed={zoomOpponentSlot}>
         { opponentsHand && <SlotHandCards hand={opponentsHand} settled={settled} /> }
       </SlotCards>
-      <div>{settled ? 'COIN' : 'NO COIN' }</div>
-      <SlotCards>
+      <SlotCards onClick={viewMySlot} zoomed={zoomMySlot}>
         { myHand && <SlotHandCards hand={myHand} settled={settled} /> }
       </SlotCards>
     </SlotWrapper>
@@ -147,15 +208,17 @@ const ProposedHandWrapper = styled.div`
   background-color: rgba(180,150,1,0.2);
 `;
 
-const ProposedHand = ({ hand }: { hand: Card[] }) => (
+const ProposedHand = ({ hand }: { hand: CardType[] }) => (
   <ProposedHandWrapper>
-    {
-      hand.map((card, index) => (
-        card
-          ? <HandCardImg key={card.id} src={`/static/cards/${card.id}.svg`} />
-          : <HandCardImg key={index} src="/static/cards/BACK.svg" />
-      ))
-    }
+    <HandWrapper>
+      {
+        hand.map((card, index) => (
+          card
+            ? <Card key={card.id} id={card.id} />
+            : <Card key={index} />
+        ))
+      }
+    </HandWrapper>
   </ProposedHandWrapper>
 );
 

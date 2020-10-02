@@ -2,7 +2,7 @@ import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 
 import { ApolloProvider } from '@apollo/client';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import config from 'client/config';
 import { StateProvider } from 'client/state';
@@ -19,6 +19,13 @@ const apolloClient = createApolloClient({
   version: 'dev',
 });
 
+const NotFound = () => (
+  <div>
+    <h1>Not Found</h1>
+    <a href="/games">Get out of here</a>
+  </div>
+);
+
 render((
   <StrictMode>
     <BrowserRouter>
@@ -31,6 +38,7 @@ render((
             <LoginRoute path="/" exact component={Home} />
             <ProtectedRoute path="/games" exact component={Games} />
             <ProtectedRoute path="/game/:id" exact component={Game} />
+            <Route component={NotFound} />
             {/* Route - 404 */}
           </Switch>
         </ApolloProvider>

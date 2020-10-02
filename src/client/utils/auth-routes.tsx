@@ -29,11 +29,12 @@ const ProtectedRoute = ({ component: Component, ...rest }: Props) => {
 
 const LoginRoute = ({ component: Component, ...rest }: Props) => {
   const loggedIn = useAppState(({ auth }) => auth.userId);
-  // TODO returnRoute default to games
+  const redirect = rest?.location?.state?.returnRoute || { pathname: '/games' };
+
   return (
     <Route
       {...rest}
-      render={(props) => (loggedIn ? <Redirect to={{ pathname: '/games' }} /> : <Component {...props} />)}
+      render={(props) => (loggedIn ? <Redirect to={redirect} /> : <Component {...props} />)}
     />
   );
 };

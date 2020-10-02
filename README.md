@@ -3,7 +3,6 @@ HELLO THERE
 
 * Barely works
 TODO:
-* Fix route redirection on login
 * Make cards actually readable and not shit.
 * Static asset caching and bundle opt
 * DNS hostname

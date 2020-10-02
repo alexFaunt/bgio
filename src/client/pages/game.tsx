@@ -47,6 +47,21 @@ const JoinGame = ({ gameId, userId, playerId, onCompleted }) => {
   return <div>Joining game!</div>;
 };
 
+const WaitingForOpponent = ({ refetch, gameId }) => {
+  useEffect(() => {
+    const id = setInterval(() => {
+      refetch();
+    }, 1000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [refetch]);
+
+  return (
+    <div>Waiting for opponent - share link {location.origin}/game/{gameId}</div>
+  );
+};
+
 const GamePage = ({ match: { params } }) => {
   const gameId = params.id;
   const userId = useAppState(({ auth }) => auth.userId);
@@ -128,7 +143,7 @@ const GamePage = ({ match: { params } }) => {
   }
 
   if (!opponent) {
-    return <div>Waiting for opponent - share link {location.origin}/game/{gameId}</div>;
+    return <WaitingForOpponent refetch={refetch} gameId={gameId} />;
   }
 
   return (
