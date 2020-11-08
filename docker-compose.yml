@@ -34,3 +34,8 @@ services:
       - "5432"
     env_file:
       - .env
+    environment:
+      - POSTGRES_DB=bgio
+      - POSTGRES_PASSWORD=admin-pass
+      - POSTGRES_USER=admin-user
+      - POSTGRES_HOST=postgres-db

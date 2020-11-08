@@ -39,3 +39,7 @@ https://github.com/goldfire/pokersolver
 
 TODO
 "react-hooks" eslint
+* Move auth to middleware - if no user generate one (except maybe home page which is for SEO / rules / big LETS GO button). Make everything in cookies
+* Un auth all pages + let that middleware handle it
+* design game page + sort out theme + components to not be shit
+* design games page + sending link stuff

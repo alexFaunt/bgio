@@ -5,8 +5,7 @@
   "main": "TODO",
   "repository": "git@github.com:alexFaunt/bgio.git",
   "engines": {
-    "yarn": "1.x",
-    "node": "14"
+    "yarn": "1.x"
   },
   "scripts": {
     "start": "yarn migrate && node ./build/server",
