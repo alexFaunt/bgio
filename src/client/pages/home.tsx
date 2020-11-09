@@ -106,6 +106,7 @@ const LoginSection = styled.div`
 
 const QuotesSection = styled.div`
   flex-grow: 1;
+  background: ${({ theme }) => theme.colors.white};
 `;
 
 const FooterSection = styled.div`
@@ -148,9 +149,9 @@ const QuotesContent = styled(PageContent)`
     right: 100%;
     background: linear-gradient(
       90deg,
-      ${({ theme }) => theme.colors.lightGrey} 0%,
-      ${({ theme }) => theme.colors.lightGrey} 70%,
-      ${({ theme }) => rgba(theme.colors.lightGrey, 0)} 100%
+      ${({ theme }) => theme.colors.white} 0%,
+      ${({ theme }) => theme.colors.white} 70%,
+      ${({ theme }) => rgba(theme.colors.white, 0)} 100%
     );
   }
 
@@ -158,9 +159,9 @@ const QuotesContent = styled(PageContent)`
     left: 100%;
     background: linear-gradient(
       -90deg,
-      ${({ theme }) => theme.colors.lightGrey} 0%,
-      ${({ theme }) => theme.colors.lightGrey} 70%,
-      ${({ theme }) => rgba(theme.colors.lightGrey, 0)} 100%
+      ${({ theme }) => theme.colors.white} 0%,
+      ${({ theme }) => theme.colors.white} 70%,
+      ${({ theme }) => rgba(theme.colors.white, 0)} 100%
     );
   }
 `;
