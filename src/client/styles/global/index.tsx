@@ -28,7 +28,7 @@ const GlobalStyle = () => {
               min-height: 100%;
               min-width: 100vw;
               overflow-x: hidden;
-              background: ${theme.colors.offWhite};
+              background: ${theme.colors.white};
               color: ${theme.colors.darkGrey};
             }
 
