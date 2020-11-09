@@ -1,4 +1,5 @@
 import React, { StrictMode } from 'react';
+import styled from 'styled-components';
 import { render } from 'react-dom';
 
 import { ApolloProvider } from '@apollo/client';
@@ -12,6 +13,9 @@ import createApolloClient from 'client/apollo-client';
 import Games from 'client/pages/games';
 import Home from 'client/pages/home';
 import Game from 'client/pages/game';
+import ThemeProvider from 'client/styles/theme';
+import GlobalStyles from 'client/styles/global';
+import useFontLoader from 'client/hooks/use-font-loader';
 
 const apolloClient = createApolloClient({
   uri: config.GRAPHQL_URL,
@@ -26,25 +30,37 @@ const NotFound = () => (
   </div>
 );
 
-render((
-  <StrictMode>
-    <BrowserRouter>
-      {/* <ThemeProvider> */}
-      {/* <ErrorBoundary> */}
-      {/* <GlobalStyles /> */}
-      <StateProvider>
-        <ApolloProvider client={apolloClient}>
-          <Switch>
-            <LoginRoute path="/" exact component={Home} />
-            <ProtectedRoute path="/games" exact component={Games} />
-            <ProtectedRoute path="/game/:id" exact component={Game} />
-            <Route component={NotFound} />
-            {/* Route - 404 */}
-          </Switch>
-        </ApolloProvider>
-      </StateProvider>
-      {/* </ErrorBoundary> */}
-      {/* </ThemeProvider> */}
-    </BrowserRouter>
-  </StrictMode>
-), document.getElementById('root'));
+const Loader = styled.div`
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 1s ease-out;
+`;
+
+const App = () => {
+  const fontLoaded = useFontLoader('Poppins');
+
+  return (
+    <StrictMode>
+      <ThemeProvider>
+        <GlobalStyles />
+        <Loader show={fontLoaded}>
+          <BrowserRouter>
+            {/* <ErrorBoundary> */}
+            <StateProvider>
+              <ApolloProvider client={apolloClient}>
+                <Switch>
+                  <LoginRoute path="/" exact component={Home} />
+                  <ProtectedRoute path="/games" exact component={Games} />
+                  <ProtectedRoute path="/game/:id" exact component={Game} />
+                  <Route component={NotFound} />
+                </Switch>
+              </ApolloProvider>
+            </StateProvider>
+            {/* </ErrorBoundary> */}
+          </BrowserRouter>
+        </Loader>
+      </ThemeProvider>
+    </StrictMode>
+  );
+};
+
+render(<App />, document.getElementById('root'));

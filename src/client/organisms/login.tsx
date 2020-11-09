@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { Formik } from 'formik';
 import shortId from 'shortid';
 import { useMutation, gql } from '@apollo/client';
@@ -7,6 +8,7 @@ import TextField from 'client/atoms/text-field';
 import { useDispatch } from 'client/state';
 import { login } from 'client/state/actions/auth';
 import Typography from 'client/atoms/typography';
+import Button from 'client/atoms/button';
 // import { CreateUser, CreateUserVariables } from ''
 // TODO generate mutation definitions
 
@@ -32,6 +34,17 @@ const CREATE_USER = gql`
       secret
     }
   }
+`;
+
+const Form = styled.form`
+  padding: 1rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+`;
+
+const NameField = styled(TextField)`
+  margin-right: 0.6rem;
 `;
 
 const Login = () => {
@@ -63,20 +76,21 @@ const Login = () => {
         handleSubmit,
         isSubmitting,
       }) => (
-        <form onSubmit={handleSubmit}>
-          <TextField
+        <Form onSubmit={handleSubmit}>
+          <NameField
             id={`${formId}:name`}
             name="name"
+            label="Pick a name"
             onChange={handleChange}
             onBlur={handleBlur}
             value={values.name}
             disabled={isSubmitting}
           />
           {errors.name && <Typography>{errors.name}</Typography> }
-          <button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}>
             Lets go!
-          </button>
-        </form>
+          </Button>
+        </Form>
       )}
     </Formik>
   );
