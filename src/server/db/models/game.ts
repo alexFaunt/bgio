@@ -9,9 +9,32 @@ class GameModel extends BaseModel {
       userId(builder, id) {
         builder
           .andWhere(function userIdModifier() {
-            this.whereRaw(`"players" -> '0' ->> 'name' = ?`, [id])
-              .orWhereRaw(`"players" -> '1' ->> 'name' = ?`, [id]);
+            this.whereRaw('"players" -> \'0\' ->> \'name\' = ?', [id])
+              .orWhereRaw('"players" -> \'1\' ->> \'name\' = ?', [id]);
           });
+      },
+      status(builder, status) {
+        if (status === 'COMPLETE') {
+          builder
+            .andWhere(function statusCompleteModifier() {
+              this.whereRaw('"state" -> \'ctx\' ->> \'gameover\' is not NULL');
+            });
+        }
+
+        if (status === 'PENDING') {
+          builder
+            .andWhere(function statusPendingModifier() {
+              this.whereRaw('"players" -> \'1\' ->> \'name\' is NULL');
+            });
+        }
+
+        if (status === 'PLAYING') {
+          builder
+            .andWhere(function statusPendingModifier() {
+              this.whereRaw('"players" -> \'1\' ->> \'name\' is not NULL')
+                .andWhereRaw('"state" -> \'ctx\' ->> \'gameover\' is NULL');
+            });
+        }
       },
     };
   }

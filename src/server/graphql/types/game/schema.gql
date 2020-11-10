@@ -4,6 +4,7 @@ input PlayerCondition {
 
 input GameConditions {
   userId: String
+  status: GameStatusEnum
 }
 
 enum GameStatusEnum {
@@ -13,7 +14,21 @@ enum GameStatusEnum {
   UNKNOWN
 }
 
+enum GameOutcome {
+  DRAW
+  VICTORY
+}
+
+type GameResult {
+  outcome: GameOutcome!
+  winner: User
+  loser: User
+}
+
 type Game {
   players: [Player!]!
   status: GameStatusEnum!
+  currentPlayer: User
+  turnNumber: Int
+  result: GameResult
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import Typography, { HeroHeader, Secondary, Quote as QuoteTypography } from 'client/atoms/typography';
+import Typography, { HeroHeader, Secondary, Quote as QuoteTypography, Title, Copy } from 'client/atoms/typography';
 import PageContent from 'client/layout/page-content';
 import LoginForm from 'client/organisms/login';
 
@@ -18,7 +18,7 @@ const backgroundKeyframes = keyframes`
 
 const quotes = [
   { content: 'I can\'t 100% tell you that it is not a game', author: 'Sid Meier' },
-  { content: 'At least it is free - at least... I don\'t think I paid for it', author: 'Charles Ponzi' },
+  { content: 'You get what you pay for, and I can confirm it\'s free', author: 'Charles Ponzi' },
   { content: 'I\'ve definitely had less fun', author: 'Floyd J. Thompson' },
   { content: 'Yeah it\'s probably good - that ok? Where\'s my cheque?', author: 'Jerry Maguire' },
 ];
@@ -59,7 +59,6 @@ const TLDRSection = styled.div`
 `;
 
 const TLDRContent = styled(PageContent)`
-  font-weight: 200;
   text-align: center;
 `;
 
@@ -123,7 +122,6 @@ const FooterContent = styled(PageContent)`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  font-weight: 200;
 `;
 
 const rgba = (hex, alpha) => {
@@ -183,7 +181,7 @@ const CustomerQuote = styled(QuoteTypography)`
   text-align: center;
 `;
 
-const CustomerName = styled(Typography)`
+const CustomerName = styled(Copy)`
   width: 100%;
   flex-shrink: 0;
   text-align: center;
@@ -191,7 +189,6 @@ const CustomerName = styled(Typography)`
   text-align: right;
   color: ${({ theme }) => theme.colors.grey};
   margin-top: 0.5rem;
-  font-weight: 200;
 `;
 
 const QuoteWrapper = styled.div`
@@ -214,33 +211,32 @@ const Quote = ({ content, author }: QuoteProps) => (
   </QuoteWrapper>
 );
 
-const SectionTitle = styled(Typography)`
-  display: block;
-  font-weight: bold;
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
-`;
-
 const Underline = styled.u`
   margin: 0 0.25rem;
+`;
+
+const TextTitle = styled(Title)`
+  margin-bottom: 0.5rem;
 `;
 
 const HomePage = () => (
   <Wrapper>
     <HeaderSection>
       <HeaderContent>
-        <Hero>Seven Hand Poker</Hero>
+        <Hero as="h1">Seven Hand Poker</Hero>
         <Subtitle>The best game ever*</Subtitle>
         <Version>Alpha</Version>
       </HeaderContent>
     </HeaderSection>
     <TLDRSection>
       <TLDRContent>
-        <SectionTitle>What is it?</SectionTitle>
-        {/* eslint-disable-next-line max-len */}
-        A two player card game, beloved by billions, played exclusively on MSN Messenger before it was wiped from existence. To my knowledge no-one has re-created it, but finally,
-        <Underline>finally</Underline>
-        it&apos;s back! Enjoy!
+        <TextTitle>What is it?</TextTitle>
+        <Copy>
+          {/* eslint-disable-next-line max-len */}
+          A two player card game, beloved by billions, played exclusively on MSN Messenger before it was wiped from existence. To my knowledge no-one has re-created it, but finally,
+          <Underline>finally</Underline>
+          it&apos;s back! Enjoy!
+        </Copy>
       </TLDRContent>
     </TLDRSection>
     <LoginSection>
@@ -259,11 +255,11 @@ const HomePage = () => (
     </QuotesSection>
     <FooterSection>
       <FooterContent>
-        <Typography>*unconfirmed</Typography>
+        <Copy>*unconfirmed</Copy>
         |
-        <Typography>All rights reserved</Typography>
+        <Copy>All rights reserved</Copy>
         |
-        <a href="mailto:complaints@sevenhandpoker.com"><Typography>contact us</Typography></a>
+        <a href="mailto:complaints@sevenhandpoker.com"><Copy>contact us</Copy></a>
       </FooterContent>
     </FooterSection>
   </Wrapper>

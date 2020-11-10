@@ -361,6 +361,7 @@ const createAutomaticSchema = () => {
       const parentEntries = false; // parent && Object.entries({ id: parent.id });
 
       const criteria = argEntries && argEntries.length ? argEntries : parentEntries;
+      console.log('RESOLVE FIELD', model.tableName, argEntries, parent);
       if (criteria && criteria.length) {
         const scopedArgs = criteria.reduce((acc, [key, value]) => {
           acc[`${model.tableName}.${key}`] = value;

@@ -6,7 +6,6 @@ import { AutoResolvers } from 'server/graphql/definitions';
 
 const readdir = promisify(fs.readdir);
 
-
 // TODO if want to extend Query would need more work. But questionable if you would, or use federation
 
 const getTypeDefinitions = async (autoResolvers: AutoResolvers) => {

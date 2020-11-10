@@ -14,8 +14,14 @@ export const HeroHeader = styled(Typography)`
   font-weight: 500;
 `;
 
-export const Detail = styled(Typography)`
-  font-size: 0.6rem;
+export const Title = styled(Typography)`
+  display: block;
+  font-weight: bold;
+  font-size: 1.4rem;
+`;
+
+export const Copy = styled(Typography)`
+  font-weight: 200;
 `;
 
 export const Secondary = styled(Typography)`

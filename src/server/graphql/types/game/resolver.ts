@@ -2,8 +2,7 @@ const players = (game) => Object.values(game.players).map((player) => {
   const requesterCanReadCreds = true;
 
   const userId = player.name;
-  // console.log('ONE', index, userId, game.players);
-console.log('USER ID ', player);
+
   return {
     id: player.id,
     open: !userId,
@@ -14,9 +13,25 @@ console.log('USER ID ', player);
 
 const gameResolver = {
   players,
-  // result: () => {
-  //   return game?.state?.ctx?.gameover.outcome;
-  // },
+  // TODO what is gameover
+  // result: (game) => game?.state?.ctx?.gameover.outcome,
+  turnNumber: (game) => game?.state?.ctx?.turn,
+  currentPlayer: (game) => {
+    // Game is finished, or not started
+    if (game?.state?.ctx?.gameover || !game?.players['1'].name) {
+      return null;
+    }
+
+    const currentPlayer = game?.state?.ctx?.currentPlayer;
+
+    // Game is in progress - who's go is it
+    if (currentPlayer) {
+      const userId = game.players[currentPlayer].name;
+      return { id: userId };
+    }
+
+    return null;
+  },
   status: (game) => {
     if (game?.state?.ctx?.gameover) {
       return 'COMPLETE';
@@ -31,6 +46,29 @@ const gameResolver = {
     }
 
     return 'UNKNOWN';
+  },
+  result: (game) => {
+    const result = game?.state?.ctx?.gameover;
+
+    if (!result) {
+      return null;
+    }
+
+    const { outcome, winningPlayerId } = result;
+    const losingPlayerId = winningPlayerId === '0' ? '1' : '0';
+
+    if (outcome === 'DRAW') {
+      return { outcome };
+    }
+
+    const winnerId = game.players[winningPlayerId].name;
+    const loserId = game.players[losingPlayerId].name;
+
+    return {
+      outcome,
+      winner: { id: winnerId },
+      loser: { id: loserId },
+    };
   },
 };
 

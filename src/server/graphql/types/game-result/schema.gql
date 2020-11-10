@@ -1,0 +1,10 @@
+enum GameOutcome {
+  DRAW
+  VICTORY
+}
+
+type GameResult {
+  outcome: GameOutcome!
+  winner: User
+  loser: User
+}

@@ -13,6 +13,7 @@ import createApolloClient from 'client/apollo-client';
 import Games from 'client/pages/games';
 import Home from 'client/pages/home';
 import Game from 'client/pages/game';
+import Profile from 'client/pages/profile';
 import ThemeProvider from 'client/styles/theme';
 import GlobalStyles from 'client/styles/global';
 import useFontLoader from 'client/hooks/use-font-loader';
@@ -49,6 +50,7 @@ const App = () => {
               <ApolloProvider client={apolloClient}>
                 <Switch>
                   <LoginRoute path="/" exact component={Home} />
+                  <ProtectedRoute path="/profile/:id" exact component={Profile} />
                   <ProtectedRoute path="/games" exact component={Games} />
                   <ProtectedRoute path="/game/:id" exact component={Game} />
                   <Route component={NotFound} />
