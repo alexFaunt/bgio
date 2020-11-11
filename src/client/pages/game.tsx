@@ -175,7 +175,6 @@ const Wrapper = styled.div`
 
 const Crop = styled.div`
   padding-bottom: 4rem;
-  overflow: hidden;
 `;
 
 const GamePage = ({ match: { params } }) => {

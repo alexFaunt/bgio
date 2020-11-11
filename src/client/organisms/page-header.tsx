@@ -20,6 +20,7 @@ const HeaderContent = styled(PageContent)`
 const HeaderTitle = styled(Title)`
   padding-bottom: 0.2rem;
   padding-top: 0.2rem;
+  flex-shrink: 0;
 `;
 
 const HeaderButton = styled(Copy)`
