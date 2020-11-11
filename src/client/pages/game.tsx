@@ -170,7 +170,12 @@ const Content = ({ gameId, userId }: unknown) => {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 4rem);
+`;
+
+const Crop = styled.div`
+  padding-bottom: 4rem;
+  overflow: hidden;
 `;
 
 const GamePage = ({ match: { params } }) => {
@@ -178,12 +183,14 @@ const GamePage = ({ match: { params } }) => {
   const userId = useAppState(({ auth }) => auth.userId);
 
   return (
-    <Wrapper>
-      <GamePageHeader link={{ to: '/games', children: 'games' }}>
-        hello
-      </GamePageHeader>
-      <Content gameId={gameId} userId={userId} />
-    </Wrapper>
+    <Crop>
+      <Wrapper>
+        <GamePageHeader link={{ to: '/games', children: 'games' }}>
+          hello
+        </GamePageHeader>
+        <Content gameId={gameId} userId={userId} />
+      </Wrapper>
+    </Crop>
   );
 };
 
