@@ -257,12 +257,12 @@ const GameDefinition: SevenHandPokerGame = {
                 // Winner by getting more coins than the other player could amass
                 if ((currentPlayerWinCount - otherPlayerWinCount) > unsettledCount) {
                   // currentPlayer wins
-                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: currentPlayer.id });
+                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: currentPlayer.id, endedAt: new Date() });
                   return undefined;
                 }
                 if ((otherPlayerWinCount - currentPlayerWinCount) > unsettledCount) {
                   // otherPlayer wins
-                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: otherPlayerId });
+                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: otherPlayerId, endedAt: new Date() });
                   return undefined;
                 }
 
@@ -273,7 +273,7 @@ const GameDefinition: SevenHandPokerGame = {
                 // Both achieved consecutive coins this turn - draw
                 if (currentPlayerWinningStreak.length > 2 && otherPlayerWinningStreak.length > 2) {
                   // Draw
-                  ctx.events.endGame({ outcome: 'DRAW' });
+                  ctx.events.endGame({ outcome: 'DRAW', endedAt: new Date() });
                   return undefined;
                 }
 
@@ -281,19 +281,19 @@ const GameDefinition: SevenHandPokerGame = {
                 // Single player achieved consecutive coins
                 if (currentPlayerWinningStreak.length > 2) {
                   // current player wins
-                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: currentPlayer.id });
+                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: currentPlayer.id, endedAt: new Date() });
                   return undefined;
                 }
                 if (otherPlayerWinningStreak.length > 2) {
                   // other player wins
-                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: otherPlayerId });
+                  ctx.events.endGame({ outcome: 'VICTORY', winningPlayerId: otherPlayerId, endedAt: new Date() });
                   return undefined;
                 }
 
                 // No winner found, but there's no coins left to win
                 if (unsettledCount === 0) {
                   // Draw
-                  ctx.events.endGame({ outcome: 'DRAW' });
+                  ctx.events.endGame({ outcome: 'DRAW', endedAt: new Date() });
                   return undefined;
                 }
               }

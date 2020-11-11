@@ -1,7 +1,7 @@
 import React, { StrictMode } from 'react';
 import styled from 'styled-components';
 import { render } from 'react-dom';
-
+import Modal from 'react-modal';
 import { ApolloProvider } from '@apollo/client';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
@@ -17,6 +17,8 @@ import Profile from 'client/pages/profile';
 import ThemeProvider from 'client/styles/theme';
 import GlobalStyles from 'client/styles/global';
 import useFontLoader from 'client/hooks/use-font-loader';
+
+Modal.setAppElement('#root');
 
 const apolloClient = createApolloClient({
   uri: config.GRAPHQL_URL,

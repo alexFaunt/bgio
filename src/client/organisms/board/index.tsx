@@ -228,7 +228,6 @@ const Opponent = styled.div`
 
 // TODO fix ClientGameState type it's wrong/missing moves / not needed?
 const Board = ({ ctx, G, moves }: ClientGameState) => {
-  console.log('G.players', G)
   const me = G.players[G.myPlayerId];
   const opponent = G.players[G.opponentPlayerId];
   const myTurn = ctx.currentPlayer === G.myPlayerId;
@@ -241,14 +240,9 @@ const Board = ({ ctx, G, moves }: ClientGameState) => {
     return null;
   }
 
-  if (ctx.gameover) {
-    return <h1>Game over</h1>;
-  }
-
   return (
     <>
       { ctx.gameover && <h1>Game over</h1>}
-      <h1>Board</h1>
       <Opponent>
         <Hand hand={opponent.hand} />
         { opponent.proposedHand && <ProposedHand hand={opponent.proposedHand} />}

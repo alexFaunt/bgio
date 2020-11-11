@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect } from 'react';
-import Game from 'client/organisms/game';
-import { useAppState } from 'client/state';
-
 import { useQuery, useMutation, gql } from '@apollo/client';
 
-const ALL_GAMES = gql`
+import Game from 'client/organisms/game';
+import { useAppState } from 'client/state';
+import PageHeader from 'client/organisms/page-header';
+
+const GET_GAME = gql`
   query GetGame($gameId: String!) {
     game(id: $gameId) {
       id
@@ -62,17 +63,7 @@ const WaitingForOpponent = ({ refetch, gameId }) => {
   );
 };
 
-const GamePage = ({ match: { params } }) => {
-  const gameId = params.id;
-  const userId = useAppState(({ auth }) => auth.userId);
-
-  const { data, loading, error, refetch } = useQuery(ALL_GAMES, {
-    skip: !gameId,
-    variables: {
-      gameId,
-    },
-  });
-
+const Content = ({ game, refetch, userId }: unknown) => {
   const onJoined = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -80,38 +71,18 @@ const GamePage = ({ match: { params } }) => {
   // TODO move it down to the joining screen with onRetry callback and clickable button
   // Also make time configurable
   useEffect(() => {
-    const openSlot = data?.game?.players?.find(({ open }) => open);
+    const openSlot = game?.players?.find(({ open }) => open);
 
-    const timeoutId = openSlot ? setTimeout(refetch, 5000) : null;
+    const timeoutId = openSlot ? setTimeout(() => refetch(), 5000) : null;
 
     return () => {
       if (timeoutId != null) {
         clearTimeout(timeoutId);
       }
     };
-  });
+  }, [game, refetch]);
 
-  if (!gameId) {
-    return <div>wtf error</div>;
-  }
-
-  if (!userId) {
-    return <div>No user error</div>;
-  }
-
-  if (loading) {
-    return <div>Loading</div>;
-  }
-
-  if (error) {
-    return <div>{ error.message }</div>;
-  }
-
-  if (!data.game) {
-    return <div>No game</div>;
-  }
-
-  const { me, opponent, openSlot } = data.game.players.reduce((acc, player) => {
+  const { me, opponent, openSlot } = game.players.reduce((acc, player) => {
     const { user, open } = player;
     if (user && user.id === userId) {
       acc.me = player;
@@ -134,7 +105,7 @@ const GamePage = ({ match: { params } }) => {
 
   if (!me && openSlot) {
     // Join game?
-    return <JoinGame gameId={gameId} userId={userId} playerId={openSlot.id} onCompleted={onJoined} />;
+    return <JoinGame gameId={game.id} userId={userId} playerId={openSlot.id} onCompleted={onJoined} />;
   }
 
   if (!me && !openSlot) {
@@ -143,11 +114,53 @@ const GamePage = ({ match: { params } }) => {
   }
 
   if (!opponent) {
-    return <WaitingForOpponent refetch={refetch} gameId={gameId} />;
+    return <WaitingForOpponent refetch={refetch} gameId={game.id} />;
   }
 
   return (
-    <Game gameId={gameId} credentials={me.credentials} playerId={me.id} />
+    <Game gameId={game.id} credentials={me.credentials} playerId={me.id} />
+  );
+};
+
+const GamePage = ({ match: { params } }) => {
+  const gameId = params.id;
+  const userId = useAppState(({ auth }) => auth.userId);
+
+  const { data, loading, error, refetch } = useQuery(GET_GAME, {
+    skip: !gameId || !userId,
+    variables: {
+      gameId,
+    },
+  });
+
+  if (!gameId) {
+    return <div>404 Not Found</div>;
+  }
+
+  if (!userId) {
+    return <div>No user?!</div>;
+  }
+
+  if (loading) {
+    return <div>Loading</div>;
+  }
+
+  if (error) {
+    console.error(error);
+    return <div>Something went wrong. Sorry - send me money so I can quit my day job and fix it.</div>;
+  }
+
+  if (!data.game) {
+    return <div>No game found</div>;
+  }
+
+  return (
+    <div>
+      <PageHeader link={{ to: '/games', children: 'games' }}>
+        hello
+      </PageHeader>
+      <Content game={data.game} userId={userId} refetch={refetch} />
+    </div>
   );
 };
 

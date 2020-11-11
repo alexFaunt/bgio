@@ -54,7 +54,7 @@ const gameResolver = {
       return null;
     }
 
-    const { outcome, winningPlayerId } = result;
+    const { outcome, endedAt, winningPlayerId } = result;
     const losingPlayerId = winningPlayerId === '0' ? '1' : '0';
 
     if (outcome === 'DRAW') {
@@ -66,6 +66,7 @@ const gameResolver = {
 
     return {
       outcome,
+      endedAt,
       winner: { id: winnerId },
       loser: { id: loserId },
     };

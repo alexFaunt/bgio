@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import Typography, { HeroHeader, Secondary, Quote as QuoteTypography, Title, Copy } from 'client/atoms/typography';
+import Underline from 'client/atoms/underline';
 import PageContent from 'client/layout/page-content';
 import LoginForm from 'client/organisms/login';
 
@@ -210,10 +211,6 @@ const Quote = ({ content, author }: QuoteProps) => (
     <CustomerName>{`- ${author}`}</CustomerName>
   </QuoteWrapper>
 );
-
-const Underline = styled.u`
-  margin: 0 0.25rem;
-`;
 
 const TextTitle = styled(Title)`
   margin-bottom: 0.5rem;

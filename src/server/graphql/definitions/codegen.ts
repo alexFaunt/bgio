@@ -5,7 +5,7 @@
 
 import GameModel from '../../db/models/game';
 import UserModel from '../../db/models/user';
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GraphQLContext } from './context';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -18,6 +18,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  DateTime: any;
 };
 
 export enum OrderDirection {
@@ -125,6 +127,7 @@ export type QueryUsersArgs = {
   direction?: Maybe<OrderDirection>;
 };
 
+
 export type CreateGameInput = {
   creatingUserId: Scalars['String'];
 };
@@ -139,8 +142,8 @@ export type CreateGameResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   createGame: CreateGameResponse;
-  joinGame: JoinGameResponse;
   createUser: CreateUserResponse;
+  joinGame: JoinGameResponse;
 };
 
 
@@ -149,13 +152,23 @@ export type MutationCreateGameArgs = {
 };
 
 
+export type MutationCreateUserArgs = {
+  input: CreateUserInput;
+};
+
+
 export type MutationJoinGameArgs = {
   input: JoinGameInput;
 };
 
+export type CreateUserInput = {
+  name: Scalars['String'];
+};
 
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
+export type CreateUserResponse = {
+  __typename?: 'CreateUserResponse';
+  user: User;
+  secret: Scalars['String'];
 };
 
 export type JoinGameInput = {
@@ -167,16 +180,6 @@ export type JoinGameInput = {
 export type JoinGameResponse = {
   __typename?: 'JoinGameResponse';
   playerCredentials: Scalars['String'];
-};
-
-export type CreateUserInput = {
-  name: Scalars['String'];
-};
-
-export type CreateUserResponse = {
-  __typename?: 'CreateUserResponse';
-  user: User;
-  secret: Scalars['String'];
 };
 
 export type PlayerCondition = {
@@ -198,6 +201,7 @@ export enum GameOutcome {
 export type GameResult = {
   __typename?: 'GameResult';
   outcome: GameOutcome;
+  endedAt: Scalars['DateTime'];
   winner?: Maybe<User>;
   loser?: Maybe<User>;
 };
@@ -301,13 +305,14 @@ export type ResolversTypes = ResolversObject<{
   UserOrder: UserOrder;
   UserConditions: UserConditions;
   Query: ResolverTypeWrapper<{}>;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   CreateGameInput: CreateGameInput;
   CreateGameResponse: ResolverTypeWrapper<CreateGameResponse>;
   Mutation: ResolverTypeWrapper<{}>;
-  JoinGameInput: JoinGameInput;
-  JoinGameResponse: ResolverTypeWrapper<JoinGameResponse>;
   CreateUserInput: CreateUserInput;
   CreateUserResponse: ResolverTypeWrapper<Omit<CreateUserResponse, 'user'> & { user: ResolversTypes['User'] }>;
+  JoinGameInput: JoinGameInput;
+  JoinGameResponse: ResolverTypeWrapper<JoinGameResponse>;
   PlayerCondition: PlayerCondition;
   GameStatusEnum: GameStatusEnum;
   GameOutcome: GameOutcome;
@@ -327,13 +332,14 @@ export type ResolversParentTypes = ResolversObject<{
   UserConnection: Omit<UserConnection, 'nodes'> & { nodes: Array<Maybe<ResolversParentTypes['User']>> };
   UserConditions: UserConditions;
   Query: {};
+  DateTime: Scalars['DateTime'];
   CreateGameInput: CreateGameInput;
   CreateGameResponse: CreateGameResponse;
   Mutation: {};
-  JoinGameInput: JoinGameInput;
-  JoinGameResponse: JoinGameResponse;
   CreateUserInput: CreateUserInput;
   CreateUserResponse: Omit<CreateUserResponse, 'user'> & { user: ResolversParentTypes['User'] };
+  JoinGameInput: JoinGameInput;
+  JoinGameResponse: JoinGameResponse;
   PlayerCondition: PlayerCondition;
   GameResult: Omit<GameResult, 'winner' | 'loser'> & { winner?: Maybe<ResolversParentTypes['User']>, loser?: Maybe<ResolversParentTypes['User']> };
   Player: Omit<Player, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
@@ -383,6 +389,10 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'limit' | 'offset' | 'orderBy' | 'direction'>>;
 }>;
 
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
+}
+
 export type CreateGameResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreateGameResponse'] = ResolversParentTypes['CreateGameResponse']> = ResolversObject<{
   gameId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   playerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -392,13 +402,8 @@ export type CreateGameResponseResolvers<ContextType = GraphQLContext, ParentType
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createGame?: Resolver<ResolversTypes['CreateGameResponse'], ParentType, ContextType, RequireFields<MutationCreateGameArgs, 'input'>>;
-  joinGame?: Resolver<ResolversTypes['JoinGameResponse'], ParentType, ContextType, RequireFields<MutationJoinGameArgs, 'input'>>;
   createUser?: Resolver<ResolversTypes['CreateUserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
-}>;
-
-export type JoinGameResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JoinGameResponse'] = ResolversParentTypes['JoinGameResponse']> = ResolversObject<{
-  playerCredentials?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  joinGame?: Resolver<ResolversTypes['JoinGameResponse'], ParentType, ContextType, RequireFields<MutationJoinGameArgs, 'input'>>;
 }>;
 
 export type CreateUserResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreateUserResponse'] = ResolversParentTypes['CreateUserResponse']> = ResolversObject<{
@@ -407,8 +412,14 @@ export type CreateUserResponseResolvers<ContextType = GraphQLContext, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
+export type JoinGameResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JoinGameResponse'] = ResolversParentTypes['JoinGameResponse']> = ResolversObject<{
+  playerCredentials?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
 export type GameResultResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GameResult'] = ResolversParentTypes['GameResult']> = ResolversObject<{
   outcome?: Resolver<ResolversTypes['GameOutcome'], ParentType, ContextType>;
+  endedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   winner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   loser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
@@ -428,10 +439,11 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
   CreateGameResponse?: CreateGameResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  JoinGameResponse?: JoinGameResponseResolvers<ContextType>;
   CreateUserResponse?: CreateUserResponseResolvers<ContextType>;
+  JoinGameResponse?: JoinGameResponseResolvers<ContextType>;
   GameResult?: GameResultResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
 }>;

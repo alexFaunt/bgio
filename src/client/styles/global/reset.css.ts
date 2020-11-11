@@ -12,6 +12,7 @@ export default `
     text-decoration: none;
     color: currentColor;
     cursor: pointer;
+    user-select: none;
   }
   button {
     background-color: transparent;
@@ -19,6 +20,7 @@ export default `
     border-width: 0;
     padding: 0;
     cursor: pointer;
+    user-select: none;
   }
   figure {
     margin: 0;

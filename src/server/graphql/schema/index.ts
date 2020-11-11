@@ -1,4 +1,5 @@
 import { mergeSchemas } from '@graphql-tools/merge';
+import { GraphQLDateTime } from 'graphql-iso-date';
 
 import createAutomaticSchema from 'server/graphql/schema/auto';
 import createMutationDefinitions from 'server/graphql/mutations';
@@ -13,12 +14,16 @@ const createSchema = async () => {
   // TODO prevent clashes
 
   const schema = mergeSchemas({
-    schemas: [autoSchema],
+    schemas: [
+      autoSchema,
+    ],
     resolvers: {
+      DateTime: GraphQLDateTime,
       ...mutationResolvers,
       ...customResolvers,
     },
     typeDefs: [
+      'scalar DateTime',
       ...mutationTypeDefs,
       ...customTypeDefs,
     ],

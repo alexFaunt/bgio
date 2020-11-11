@@ -50,6 +50,7 @@ module.exports = {
     'import/no-cycle': 'off',
 
     'react/require-default-props': 'off',
+    'react/jsx-one-expression-per-line': 'off',
 
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/lines-between-class-members': 'off',

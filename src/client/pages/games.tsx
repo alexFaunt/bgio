@@ -1,34 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Link, useLocation } from 'react-router-dom';
-import { useAppState } from 'client/state';
+import { Link } from 'react-router-dom';
 import { useMutation, useQuery, gql } from '@apollo/client';
+import { useAppState } from 'client/state';
 import { Title, Copy, Quote } from 'client/atoms/typography';
 import Button from 'client/atoms/button';
+import PrettyDate from 'client/atoms/pretty-date';
 import PageContent from 'client/layout/page-content';
-
-const PageHeader = styled.header`
-  background: ${({ theme }) => theme.colors.darkGrey};
-  color: ${({ theme }) => theme.colors.white};
-`;
-
-const HeaderContent = styled(PageContent)`
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-`;
-
-const HeaderTitle = styled(Title)`
-  padding-bottom: 0.2rem;
-  padding-top: 0.2rem;
-`;
-
-const HeaderButton = styled(Copy)`
-  display: block;
-  padding: 0.6rem 0.8rem 0.3rem;
-  margin: 0 -0.8rem;
-  font-size: 0.9rem;
-`;
+import PageHeader from 'client/organisms/page-header';
 
 // TODO generate types for these + custom scalars
 const CREATE_GAME = gql`
@@ -41,7 +20,7 @@ const CREATE_GAME = gql`
   }
 `;
 
-// TODO sort by Done order by created_AT desc
+// TODO - move this to a file so we can get types
 const MY_GAMES = gql`
   query MyGames($userId: String!) {
     me: user(id: $userId) {
@@ -89,6 +68,7 @@ const MY_GAMES = gql`
         }
         result {
           outcome
+          endedAt
           winner {
             id
             name
@@ -156,6 +136,7 @@ const PendingGame = ({ id, isNew = false }: { id: string, isNew?: boolean }) => 
   <PendingGameRow isNew={isNew}>
     <GameId>{ id }</GameId>
     <GameLink as={Link} to={`/game/${id}`}>Open game</GameLink>
+    {/* TODO - stop the copying on buttons */}
     <CopyLink as="button" onClick={() => copyToClipboard(id)}>Copy link</CopyLink>
   </PendingGameRow>
 );
@@ -169,7 +150,7 @@ const TurnMarker = styled<{ isYourTurn: boolean }>(Copy)`
   color: ${({ theme, isYourTurn }) => (isYourTurn ? theme.colors.blue : 'currentColor')};
 `;
 
-const GameList = ({ myUserId, games }: { games: any, myUserId: string }) => {
+const GameList = ({ myUserId, games }: { games: unknown, myUserId: string }) => {
   if (!games?.length) {
     return <Copy>No games here yet!</Copy>;
   }
@@ -194,6 +175,7 @@ const GameList = ({ myUserId, games }: { games: any, myUserId: string }) => {
                 { result.outcome === 'VICTORY' && result.winner.id !== myUserId && ' lost to ' }
                 { result.outcome === 'DRAW' && ' drew with ' }
                 <b>{ opponent.user.name }</b>
+                <PrettyDate>{ result.endedAt }</PrettyDate>
               </GameLink>
             );
           }
@@ -214,19 +196,9 @@ const GameList = ({ myUserId, games }: { games: any, myUserId: string }) => {
   );
 };
 
-const Wrapper = styled.div`
-
-`;
-
 const MainSection = styled.div`
   padding-top: 1rem;
   padding-bottom: 2rem;
-`;
-
-const MainContent = styled(PageContent)`
-`;
-
-const Greeting = styled(Quote)`
 `;
 
 const Name = styled.span`
@@ -245,7 +217,7 @@ const GreetingContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   margin-bottom: -0.5rem;
 `;
 
@@ -255,6 +227,7 @@ const GamesPage = () => {
   const { data, loading, error } = useQuery(MY_GAMES, {
     variables: { userId },
     pollInterval: 30000,
+    skip: !userId,
   });
 
   const [createGame, { loading: createLoading, error: createError }] = useMutation(CREATE_GAME, {
@@ -276,8 +249,9 @@ const GamesPage = () => {
               {
                 __typename: 'Game',
                 id: gameId,
-                status: 'NEW', // HACK - doens't work because going back from a game to games list they're still cached as NEW
-                // Also would be nice to do it for when it polls + moves to active - need to keep local list or something
+                status: 'NEW',
+                // HACK - doens't work because going back from a game to games list they're still cached as NEW
+                // Also would be nice to do it for when it polls + moves to active - need to keep local list or somethin
                 // Also the anim is a bit fucked becuase of combo between anim + transition
               },
               ...data.games.nodes,
@@ -292,7 +266,7 @@ const GamesPage = () => {
     return <div>Loading your info</div>;
   }
 
-  if (error || !data) {
+  if (error || !data || !userId) {
     return <div>Error loading your games. Sorry. Send me money so I can quit and spend time fixing it.</div>;
   }
 
@@ -305,18 +279,12 @@ const GamesPage = () => {
   const completeGames = data.completeGames?.nodes || [];
 
   return (
-    <Wrapper>
-      <PageHeader>
-        <HeaderContent>
-          <HeaderButton as={Link} to={`profile/${userId}`}>profile</HeaderButton>
-          <HeaderTitle as="h1">Seven Hand Poker</HeaderTitle>
-          <HeaderButton onClick={() => console.log('hi')}>rules</HeaderButton>
-        </HeaderContent>
-      </PageHeader>
+    <div>
+      <PageHeader link={{ to: `/profile/${userId}`, children: 'profile' }} />
       <MainSection>
-        <MainContent>
+        <PageContent>
           <GreetingContent>
-            <Greeting>Hello there <Name>{data?.me?.name}</Name>!</Greeting>
+            <Quote>Hello there <Name>{data?.me?.name}</Name>!</Quote>
             <Button onClick={createGame} disabled={createLoading}>
               { createLoading ? 'Loading...' : 'New game' }
             </Button>
@@ -332,9 +300,9 @@ const GamesPage = () => {
 
           <GameHeader><Title>Completed games</Title></GameHeader>
           <GameList myUserId={userId} games={completeGames} />
-        </MainContent>
+        </PageContent>
       </MainSection>
-    </Wrapper>
+    </div>
   );
 };
 

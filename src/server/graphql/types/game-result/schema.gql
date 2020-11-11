@@ -5,6 +5,7 @@ enum GameOutcome {
 
 type GameResult {
   outcome: GameOutcome!
+  endedAt: DateTime!
   winner: User
   loser: User
 }
