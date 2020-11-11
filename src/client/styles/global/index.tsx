@@ -35,6 +35,11 @@ const GlobalStyle = () => {
             *:focus {
               outline: 0;
             }
+
+            .bgio-client {
+              height: 100%;
+              max-width: calc(100vw - 2rem);
+            }
           `
         }
       </style>

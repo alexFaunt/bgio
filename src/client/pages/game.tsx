@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect } from 'react';
+import styled from 'styled-components';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
 import Game from 'client/organisms/game';
 import { useAppState } from 'client/state';
 import PageHeader from 'client/organisms/page-header';
+import OpponentNameContext from 'client/organisms/board/opponent-name';
+import PageContent from 'client/layout/page-content';
 
 const GET_GAME = gql`
   query GetGame($gameId: String!) {
@@ -63,7 +66,24 @@ const WaitingForOpponent = ({ refetch, gameId }) => {
   );
 };
 
-const Content = ({ game, refetch, userId }: unknown) => {
+const GameWrap = styled(PageContent)`
+  flex-grow: 1;
+`;
+
+const GamePageHeader = styled(PageHeader)`
+  flex-shrink: 0;
+`;
+
+const Content = ({ gameId, userId }: unknown) => {
+  const { data, loading, error, refetch } = useQuery(GET_GAME, {
+    skip: !gameId || !userId,
+    variables: {
+      gameId,
+    },
+  });
+
+  const game = data?.game;
+
   const onJoined = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -81,6 +101,27 @@ const Content = ({ game, refetch, userId }: unknown) => {
       }
     };
   }, [game, refetch]);
+
+  if (!gameId) {
+    return <div>404 Not Found</div>;
+  }
+
+  if (!userId) {
+    return <div>No user?!</div>;
+  }
+
+  if (loading) {
+    return <div>Loading</div>;
+  }
+
+  if (error) {
+    console.error(error);
+    return <div>Something went wrong. Sorry - send me money so I can quit my day job and fix it.</div>;
+  }
+
+  if (!data.game) {
+    return <div>No game found</div>;
+  }
 
   const { me, opponent, openSlot } = game.players.reduce((acc, player) => {
     const { user, open } = player;
@@ -118,49 +159,31 @@ const Content = ({ game, refetch, userId }: unknown) => {
   }
 
   return (
-    <Game gameId={game.id} credentials={me.credentials} playerId={me.id} />
+    <GameWrap>
+      <OpponentNameContext.Provider value={opponent.user.name}>
+        <Game gameId={game.id} credentials={me.credentials} playerId={me.id} />
+      </OpponentNameContext.Provider>
+    </GameWrap>
   );
 };
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+`;
 
 const GamePage = ({ match: { params } }) => {
   const gameId = params.id;
   const userId = useAppState(({ auth }) => auth.userId);
 
-  const { data, loading, error, refetch } = useQuery(GET_GAME, {
-    skip: !gameId || !userId,
-    variables: {
-      gameId,
-    },
-  });
-
-  if (!gameId) {
-    return <div>404 Not Found</div>;
-  }
-
-  if (!userId) {
-    return <div>No user?!</div>;
-  }
-
-  if (loading) {
-    return <div>Loading</div>;
-  }
-
-  if (error) {
-    console.error(error);
-    return <div>Something went wrong. Sorry - send me money so I can quit my day job and fix it.</div>;
-  }
-
-  if (!data.game) {
-    return <div>No game found</div>;
-  }
-
   return (
-    <div>
-      <PageHeader link={{ to: '/games', children: 'games' }}>
+    <Wrapper>
+      <GamePageHeader link={{ to: '/games', children: 'games' }}>
         hello
-      </PageHeader>
-      <Content game={data.game} userId={userId} refetch={refetch} />
-    </div>
+      </GamePageHeader>
+      <Content gameId={gameId} userId={userId} />
+    </Wrapper>
   );
 };
 

@@ -1,10 +1,10 @@
 import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import Modal from 'react-modal';
 import { Title, Copy } from 'client/atoms/typography';
 import PageContent from 'client/layout/page-content';
 import Underline from 'client/atoms/underline';
+import Modal from 'client/molecules/modal';
 
 const PageHeader = styled.header`
   background: ${({ theme }) => theme.colors.darkGrey};
@@ -27,56 +27,6 @@ const HeaderButton = styled(Copy)`
   padding: 0.4rem 0.8rem;
   margin: 0 -0.8rem;
   font-size: 0.9rem;
-`;
-
-const rulesModalStyles = {
-  overlay: { backgroundColor: 'rgba(47, 47, 47, 0.75)' },
-  content: { top: '1rem', left: '1rem', right: '1rem', bottom: '1rem', padding: '0.7rem 1rem' },
-};
-
-const ModalHeader = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  background: white;
-  margin: 0 -1rem 1rem;
-  padding: 0 1rem 0.5rem;
-  box-shadow: 0px -0.1rem 0.5rem -12px black;
-
-  &::before {
-    content: '';
-    position: absolute;
-    height: 0.7rem;
-    top: -0.7rem;
-    left: 0;
-    right: 0;
-    background: inherit;
-  }
-`;
-
-const ModalCloseButton = styled.button`
-  overflow: hidden;
-  position: relative;
-  width: 2rem;
-  height: 2rem;
-  text-indent: -10rem;
-  margin-right: -0.6rem;
-
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 0;
-    font-size: 2rem;
-    background-image: url('/static/icons/cross-icon.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
 `;
 
 const RulesCopy = styled(Copy)`
@@ -103,12 +53,7 @@ export default ({ link }: { link?: { to: string, children: ReactNode } }) => {
         <HeaderTitle as="h1">Seven Hand Poker</HeaderTitle>
         <HeaderButton as="button" onClick={() => setShowRules(true)}>rules</HeaderButton>
       </HeaderContent>
-      <Modal isOpen={showRules} onRequestClose={closeRules} style={rulesModalStyles}>
-        <ModalHeader>
-          <Title>How to play</Title>
-          <ModalCloseButton onClick={closeRules}>close</ModalCloseButton>
-        </ModalHeader>
-
+      <Modal isOpen={showRules} title="How to play" close={closeRules}>
         {/* eslint-disable max-len */}
         <RulesSection>
           <RulesTitle>1. Picking a hand</RulesTitle>

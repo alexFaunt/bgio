@@ -20,7 +20,10 @@ const Game = Client({
 });
 
 export default ({ gameId, credentials, playerId }) => (
-  <div>
-    <Game gameID={gameId} credentials={credentials} playerID={playerId} debug={config.BGIO_DEBUG} />
-  </div>
+  <Game
+    gameID={gameId}
+    credentials={credentials}
+    playerID={playerId}
+    debug={config.BGIO_DEBUG}
+  />
 );
