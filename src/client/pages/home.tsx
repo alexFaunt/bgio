@@ -230,9 +230,9 @@ const HomePage = () => (
         <TextTitle>What is it?</TextTitle>
         <Copy>
           {/* eslint-disable-next-line max-len */}
-          A two player card game, beloved by billions, played exclusively on MSN Messenger before it was wiped from existence. To my knowledge no-one has re-created it, but finally,
+          <span>A two player card game, beloved by billions, played exclusively on MSN Messenger before it was wiped from existence. To my knowledge no-one has re-created it, but finally,</span>
           <Underline>finally</Underline>
-          it&apos;s back! Enjoy!
+          <span>it&apos;s back! Enjoy!</span>
         </Copy>
       </TLDRContent>
     </TLDRSection>
