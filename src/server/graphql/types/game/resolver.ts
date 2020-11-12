@@ -57,16 +57,17 @@ const gameResolver = {
     const { outcome, endedAt, winningPlayerId } = result;
     const losingPlayerId = winningPlayerId === '0' ? '1' : '0';
 
+    const details = { outcome, endedAt };
+
     if (outcome === 'DRAW') {
-      return { outcome };
+      return details;
     }
 
     const winnerId = game.players[winningPlayerId].name;
     const loserId = game.players[losingPlayerId].name;
 
     return {
-      outcome,
-      endedAt,
+      ...details,
       winner: { id: winnerId },
       loser: { id: loserId },
     };
