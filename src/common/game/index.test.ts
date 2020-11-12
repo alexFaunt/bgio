@@ -1,5 +1,6 @@
 // TODO imports?
-import SevenHandPoker from 'common/game/index';
+import SevenHandPoker, { getWinners } from 'common/game/index';
+import * as pokersolver from 'pokersolver';
 
 jest.mock('common/game/deck');
 
@@ -136,6 +137,100 @@ describe('SevenHandPoker', () => {
       });
 
       expect(events.endGame).toHaveBeenCalledWith({ outcome: 'VICTORY', winningPlayerId: '0' });
+    });
+  });
+});
+
+describe('#getWinners', () => {
+  describe('uses kickers to decide hands', () => {
+    it('correctly picks A over K2', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD'] },
+        { id: '2', cards: ['KD', '2C'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['1']);
+    });
+
+    it('correctly picks A2 over A', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD'] },
+        { id: '2', cards: ['AC', '3C'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['2']);
+    });
+
+    it('correctly picks AA3 over AA2', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD', 'AS', '2C'] },
+        { id: '2', cards: ['AC', 'AH', '3C'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['2']);
+    });
+
+    it('correctly picks AA2 over AA', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD', 'AS', '2C'] },
+        { id: '2', cards: ['AC', 'AH'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['1']);
+    });
+
+    it('correctly picks A42 over A32', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD', '4S', '2C'] },
+        { id: '2', cards: ['AC', '3H', '2C'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['1']);
+    });
+
+    it('correctly picks A43 over A4', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD', '4S', '3C'] },
+        { id: '2', cards: ['AC', '4H'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['1']);
+    });
+
+    it('correctly picks A5 over A432', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD', '5S'] },
+        { id: '2', cards: ['AC', '4S', '3S', '2S'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['1']);
+    });
+
+    it('correctly picks AAJJ2 over AAJJ', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD', 'AS', 'JD', 'JS', '2C'] },
+        { id: '2', cards: ['AC', 'AH', 'JC', 'JH'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['1']);
+    });
+
+    it('correctly picks AAJJ3 over AAJJ2', () => {
+      const winners = getWinners(
+        { id: '1', cards: ['AD', 'AS', 'JD', 'JS', '3C'] },
+        { id: '2', cards: ['AC', 'AH', 'JC', 'JH', '2C'] },
+      );
+
+      expect(winners.length).toBe(1);
+      expect(winners).toEqual(['1']);
     });
   });
 });

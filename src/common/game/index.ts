@@ -74,6 +74,38 @@ const extractWinningStreakIndexes = (arr) => arr.sort().reduce((acc, index) => {
   return [index];
 }, []);
 
+type WinnerCheck = {
+  id: string,
+  cards: string[],
+};
+export const getWinners = (input1: WinnerCheck, input2: WinnerCheck) => {
+  const hand1 = pokersolver.Hand.solve(input1.cards);
+  const hand2 = pokersolver.Hand.solve(input2.cards);
+
+  const winners = pokersolver.Hand.winners([hand1, hand2]);
+
+  // It's a draw - but one hand has more cards, the final kicker is the tie breaker.
+  if (winners.length === 2) {
+    if (input1.cards.length > input2.cards.length) {
+      return [input1.id];
+    }
+
+    if (input2.cards.length > input1.cards.length) {
+      return [input2.id];
+    }
+  }
+
+  return winners.map((winner) => {
+    if (winner === hand1) {
+      return input1.id;
+    }
+
+    if (winner === hand2) {
+      return input2.id;
+    }
+  });
+};
+
 const GameDefinition: SevenHandPokerGame = {
   name: 'seven-hand-poker',
   minPlayers: 2,
@@ -217,20 +249,15 @@ const GameDefinition: SevenHandPokerGame = {
               const otherPlayerCards = slot.hands[otherPlayerId]?.cards;
 
               if (otherPlayerCards) {
-                // Calculate winner + award coins
-                const currentPlayerHand = pokersolver.Hand.solve(currentPlayerCards);
-                const otherPlayerHand = pokersolver.Hand.solve(otherPlayerCards);
+                const winningPlayerIds = getWinners(
+                  { id: currentPlayer.id, cards: currentPlayerCards },
+                  { id: otherPlayerId, cards: otherPlayerCards },
+                );
 
-                const winners = pokersolver.Hand.winners([currentPlayerHand, otherPlayerHand]);
-                winners.forEach((winner) => {
-                  if (winner === currentPlayerHand) {
-                    slot.hands[currentPlayer.id].coin = true;
-                  }
-
-                  if (winner === otherPlayerHand) {
-                    slot.hands[otherPlayerId].coin = true;
-                  }
+                winningPlayerIds.forEach((playerId) => {
+                  slot.hands[playerId].coin = true;
                 });
+
                 slot.settled = true;
 
                 // The rules on draws are not really available so making them up...
