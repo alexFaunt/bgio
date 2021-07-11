@@ -5,23 +5,23 @@ import parse from 'sequelize-parse-url';
 import SevenHandPoker from 'common/game';
 
 type CreateBoardGameServerArgs = {
-  dbUrl: string;
+  connection: string;
 };
 
-const createBoardGameServer = ({ dbUrl }: CreateBoardGameServerArgs) => {
+const createBoardGameServer = ({ connection }: CreateBoardGameServerArgs) => {
   console.log('CONFIG', {
-    ...parse(dbUrl),
+    ...parse(connection),
     ssl: true,
     dialectOptions: {
       ssl: { require: true },
     },
   });
 
-  const db = new PostgresStore(`${dbUrl}?ssl=true`);
+  const db = new PostgresStore(connection);
 
   console.log('After DB create');
   // const db = new PostgresStore({
-  //   ...parse(dbUrl),
+  //   ...parse(connection),
   //   ssl: true,
 
   //   dialectOptions: {

@@ -21,17 +21,19 @@ const createServer = async (config: Config) => {
     min: config.KNEX_POOL_MIN,
     max: config.KNEX_POOL_MAX,
   };
-  const connection = {
-    connectionString: config.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  };
+  // const connection = {
+  //   connectionString: config.DATABASE_URL,
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // };
+
+  const connection = `${config.DATABASE_URL}?ssl=true`;
   const apolloDbPool = createPool({ connection, pool });
   const authStateDbPool = createPool({ connection, pool });
 
   // This is the koa server - it doesn't allow us to export as middleware
-  const boardGameServer = createBoardGameServer({ dbUrl: config.DATABASE_URL });
+  const boardGameServer = createBoardGameServer({ connection });
 
   // Apollo server for other content on /graphql
   const apolloServer = await createApolloServer({
