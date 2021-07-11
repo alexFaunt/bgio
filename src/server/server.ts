@@ -31,7 +31,7 @@ const createServer = async (config: Config) => {
   const authStateDbPool = createPool({ connection, pool });
 
   // This is the koa server - it doesn't allow us to export as middleware
-  const boardGameServer = createBoardGameServer({ connection });
+  const boardGameServer = createBoardGameServer({ dbUrl: config.DATABASE_URL });
 
   // Apollo server for other content on /graphql
   const apolloServer = await createApolloServer({

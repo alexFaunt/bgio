@@ -135,7 +135,7 @@ const GameDefinition: SevenHandPokerGame = {
   setup: (ctx) => {
     const deck = Deck.shuffle(Deck.create());
 
-     // TODO - should come via "something" I think? needs secrets or something too...? wtf is it hard coded
+    // TODO - should come via "something" I think? needs secrets or something too...? wtf is it hard coded
     const playerIds = ['0', '1'];
 
     const players = playerIds.reduce((acc, id) => {

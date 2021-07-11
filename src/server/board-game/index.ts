@@ -4,11 +4,11 @@ import { PostgresStore } from 'bgio-postgres';
 import SevenHandPoker from 'common/game';
 
 type CreateBoardGameServerArgs = {
-  connection: string;
+  dbUrl: string;
 };
 
-const createBoardGameServer = ({ connection }: CreateBoardGameServerArgs) => {
-  const db = new PostgresStore(connection);
+const createBoardGameServer = ({ dbUrl }: CreateBoardGameServerArgs) => {
+  const db = new PostgresStore(dbUrl);
 
   const server = Server({
     games: [SevenHandPoker],
