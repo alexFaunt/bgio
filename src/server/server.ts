@@ -17,10 +17,15 @@ let indexFile;
 const readFile = promisify(fs.readFile);
 
 const createServer = async (config: Config) => {
-  const connection = config.DATABASE_URL;
   const pool = {
     min: config.KNEX_POOL_MIN,
     max: config.KNEX_POOL_MAX,
+  };
+  const connection = {
+    connectionString: config.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   };
   const apolloDbPool = createPool({ connection, pool });
   const authStateDbPool = createPool({ connection, pool });
