@@ -1,6 +1,18 @@
 
 HELLO THERE
 
+### Latest notes
+
+Something changed with the DB config or something, but at some point the app stopped being able to start
+
+This was due to `"start": "yarn migrate && .."` tried to access the DB and threw error:
+```
+error: no pg_hba.conf entry for host "ip.add.r.ess", user "user_name", database "db_name", SSL off
+```
+
+
+### Notes from when i gave up building MVP:
+
 * Barely works
 TODO:
 * Make cards actually readable and not shit.

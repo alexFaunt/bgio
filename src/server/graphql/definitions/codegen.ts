@@ -128,38 +128,6 @@ export type QueryUsersArgs = {
 };
 
 
-export type CreateUserInput = {
-  name: Scalars['String'];
-};
-
-export type CreateUserResponse = {
-  __typename?: 'CreateUserResponse';
-  user: User;
-  secret: Scalars['String'];
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  createUser: CreateUserResponse;
-  createGame: CreateGameResponse;
-  joinGame: JoinGameResponse;
-};
-
-
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
-};
-
-
-export type MutationCreateGameArgs = {
-  input: CreateGameInput;
-};
-
-
-export type MutationJoinGameArgs = {
-  input: JoinGameInput;
-};
-
 export type CreateGameInput = {
   creatingUserId: Scalars['String'];
 };
@@ -169,6 +137,38 @@ export type CreateGameResponse = {
   gameId: Scalars['String'];
   playerId: Scalars['String'];
   playerCredentials: Scalars['String'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createGame: CreateGameResponse;
+  createUser: CreateUserResponse;
+  joinGame: JoinGameResponse;
+};
+
+
+export type MutationCreateGameArgs = {
+  input: CreateGameInput;
+};
+
+
+export type MutationCreateUserArgs = {
+  input: CreateUserInput;
+};
+
+
+export type MutationJoinGameArgs = {
+  input: JoinGameInput;
+};
+
+export type CreateUserInput = {
+  name: Scalars['String'];
+};
+
+export type CreateUserResponse = {
+  __typename?: 'CreateUserResponse';
+  user: User;
+  secret: Scalars['String'];
 };
 
 export type JoinGameInput = {
@@ -306,11 +306,11 @@ export type ResolversTypes = ResolversObject<{
   UserConditions: UserConditions;
   Query: ResolverTypeWrapper<{}>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
-  CreateUserInput: CreateUserInput;
-  CreateUserResponse: ResolverTypeWrapper<Omit<CreateUserResponse, 'user'> & { user: ResolversTypes['User'] }>;
-  Mutation: ResolverTypeWrapper<{}>;
   CreateGameInput: CreateGameInput;
   CreateGameResponse: ResolverTypeWrapper<CreateGameResponse>;
+  Mutation: ResolverTypeWrapper<{}>;
+  CreateUserInput: CreateUserInput;
+  CreateUserResponse: ResolverTypeWrapper<Omit<CreateUserResponse, 'user'> & { user: ResolversTypes['User'] }>;
   JoinGameInput: JoinGameInput;
   JoinGameResponse: ResolverTypeWrapper<JoinGameResponse>;
   PlayerCondition: PlayerCondition;
@@ -333,11 +333,11 @@ export type ResolversParentTypes = ResolversObject<{
   UserConditions: UserConditions;
   Query: {};
   DateTime: Scalars['DateTime'];
-  CreateUserInput: CreateUserInput;
-  CreateUserResponse: Omit<CreateUserResponse, 'user'> & { user: ResolversParentTypes['User'] };
-  Mutation: {};
   CreateGameInput: CreateGameInput;
   CreateGameResponse: CreateGameResponse;
+  Mutation: {};
+  CreateUserInput: CreateUserInput;
+  CreateUserResponse: Omit<CreateUserResponse, 'user'> & { user: ResolversParentTypes['User'] };
   JoinGameInput: JoinGameInput;
   JoinGameResponse: JoinGameResponse;
   PlayerCondition: PlayerCondition;
@@ -393,22 +393,22 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type CreateUserResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreateUserResponse'] = ResolversParentTypes['CreateUserResponse']> = ResolversObject<{
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  secret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
-}>;
-
-export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  createUser?: Resolver<ResolversTypes['CreateUserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
-  createGame?: Resolver<ResolversTypes['CreateGameResponse'], ParentType, ContextType, RequireFields<MutationCreateGameArgs, 'input'>>;
-  joinGame?: Resolver<ResolversTypes['JoinGameResponse'], ParentType, ContextType, RequireFields<MutationJoinGameArgs, 'input'>>;
-}>;
-
 export type CreateGameResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreateGameResponse'] = ResolversParentTypes['CreateGameResponse']> = ResolversObject<{
   gameId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   playerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   playerCredentials?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  createGame?: Resolver<ResolversTypes['CreateGameResponse'], ParentType, ContextType, RequireFields<MutationCreateGameArgs, 'input'>>;
+  createUser?: Resolver<ResolversTypes['CreateUserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
+  joinGame?: Resolver<ResolversTypes['JoinGameResponse'], ParentType, ContextType, RequireFields<MutationJoinGameArgs, 'input'>>;
+}>;
+
+export type CreateUserResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CreateUserResponse'] = ResolversParentTypes['CreateUserResponse']> = ResolversObject<{
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  secret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
@@ -440,9 +440,9 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   UserConnection?: UserConnectionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
-  CreateUserResponse?: CreateUserResponseResolvers<ContextType>;
-  Mutation?: MutationResolvers<ContextType>;
   CreateGameResponse?: CreateGameResponseResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  CreateUserResponse?: CreateUserResponseResolvers<ContextType>;
   JoinGameResponse?: JoinGameResponseResolvers<ContextType>;
   GameResult?: GameResultResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
