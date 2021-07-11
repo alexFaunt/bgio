@@ -5,8 +5,9 @@ const migrationConfig = {
   connection: {
     // eslint-disable-next-line no-process-env
     connectionString: process.env.DATABASE_URL,
-    ssl: true,
-    rejectUnauthorized: false,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
   migrations: {
     tableName: 'knex_migrations',
