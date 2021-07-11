@@ -9,10 +9,25 @@ type CreateBoardGameServerArgs = {
 };
 
 const createBoardGameServer = ({ dbUrl }: CreateBoardGameServerArgs) => {
-  const db = new PostgresStore({
+  console.log('CONFIG', {
     ...parse(dbUrl),
     ssl: true,
+    dialectOptions: {
+      ssl: { require: true },
+    },
   });
+
+  const db = new PostgresStore(`${dbUrl}?ssl=true`);
+
+  console.log('After DB create');
+  // const db = new PostgresStore({
+  //   ...parse(dbUrl),
+  //   ssl: true,
+
+  //   dialectOptions: {
+  //     ssl: { require: true },
+  //   },
+  // });
 
   const server = Server({
     games: [SevenHandPoker],

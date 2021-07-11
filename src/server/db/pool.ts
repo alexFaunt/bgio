@@ -6,7 +6,7 @@ export type Pool = {
 };
 
 type PoolArgs = {
-  connection: string,
+  connection: any,
   pool: Pool,
   debug?: boolean,
 };
