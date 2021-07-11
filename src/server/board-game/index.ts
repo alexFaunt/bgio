@@ -1,6 +1,7 @@
 import { Server } from 'boardgame.io/server';
 
 import { PostgresStore } from 'bgio-postgres';
+import parse from 'sequelize-parse-url';
 import SevenHandPoker from 'common/game';
 
 type CreateBoardGameServerArgs = {
@@ -8,7 +9,10 @@ type CreateBoardGameServerArgs = {
 };
 
 const createBoardGameServer = ({ dbUrl }: CreateBoardGameServerArgs) => {
-  const db = new PostgresStore(dbUrl);
+  const db = new PostgresStore({
+    ...parse(dbUrl),
+    ssl: true,
+  });
 
   const server = Server({
     games: [SevenHandPoker],

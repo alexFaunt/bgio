@@ -10277,6 +10277,11 @@ sentence-case@^2.1.0:
     no-case "^2.2.0"
     upper-case-first "^1.1.2"
 
+sequelize-parse-url@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/sequelize-parse-url/-/sequelize-parse-url-1.0.2.tgz#297e86f7cf04c0a7db43873d80adaa9f3a9f3b5a"
+  integrity sha512-PAd+C2naL/ro/xeieoORkwV0M/Q8UPBZ/yDmdZU7lt3wYdFNvSZI6bDRbj3nGAstDryEq7kW5r6IG3m/HrpRBQ==
+
 sequelize-pool@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/sequelize-pool/-/sequelize-pool-2.3.0.tgz#64f1fe8744228172c474f530604b6133be64993d"
